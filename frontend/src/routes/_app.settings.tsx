@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/shared/primitives";
 import { UserAvatar } from "@/components/user-avatar";
 import { ImageCropUploadModal } from "@/components/shared/ImageCropUploadModal";
-import { DeleteAccountModal } from "@/components/settings/DeleteAccountModal";
+import { useConfirm } from "@/components/confirm/ConfirmProvider";
 import { OAuthAccountsSection } from "@/components/settings/OAuthAccountsSection";
 import { MFASection } from "@/features/settings/components/MFASection";
 import { Switch } from "@/components/ui/switch";
@@ -63,7 +63,6 @@ function SettingsPage() {
   const [savingAccount, setSavingAccount] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [exporting, setExporting] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [isBannerModalOpen, setIsBannerModalOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | undefined>(currentUser.avatar);
@@ -82,6 +81,27 @@ function SettingsPage() {
   const handleConfirmDelete = async () => {
     await new Promise((resolve) => setTimeout(resolve, 1500));
     window.location.href = "/";
+  };
+
+  const confirm = useConfirm();
+
+  const handleDeleteAccount = async () => {
+    const ok = await confirm({
+      title: "Delete account",
+      description:
+        "This action is permanent and cannot be undone. All your profile data, projects, bookmarks, and activity will be erased forever.",
+      confirmText: "Permanently Delete",
+      variant: "destructive",
+    });
+    if (!ok) return;
+
+    try {
+      await handleConfirmDelete();
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to delete account. Please try again.",
+      );
+    }
   };
 
   const inp =
@@ -283,7 +303,7 @@ function SettingsPage() {
                     <Button
                       variant="destructive"
                       size="sm"
-                      onClick={() => setDeleteModalOpen(true)}
+                      onClick={handleDeleteAccount}
                       className="shrink-0"
                     >
                       Delete
@@ -699,13 +719,6 @@ function SettingsPage() {
           </Card>
         </main>
       </div>
-
-      <DeleteAccountModal
-        open={deleteModalOpen}
-        onOpenChange={setDeleteModalOpen}
-        onConfirmDelete={handleConfirmDelete}
-        userEmail="nancy@example.com"
-      />
     </div>
   );
 }
