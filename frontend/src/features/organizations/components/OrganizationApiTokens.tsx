@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { api } from "../../../api";
 import { Key, Plus, Trash2, Copy, Check, ShieldAlert, Loader2 } from "lucide-react";
+import { useConfirm } from "@/components/confirm/ConfirmProvider";
 
 interface Token {
   id: string;
@@ -31,6 +32,8 @@ export const OrganizationApiTokens: React.FC<OrganizationApiTokensProps> = ({ or
   // Single-use raw token display
   const [generatedToken, setGeneratedToken] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+
+  const confirm = useConfirm();
 
   const availableScopes = [
     {
@@ -111,13 +114,13 @@ export const OrganizationApiTokens: React.FC<OrganizationApiTokensProps> = ({ or
   };
 
   const handleRevokeToken = async (tokenId: string) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to revoke this API token? This action is permanent and cannot be undone.",
-      )
-    ) {
-      return;
-    }
+    const ok = await confirm({
+      title: "Revoke API token?",
+      description: "This action is permanent and cannot be undone.",
+      confirmText: "Revoke",
+      variant: "destructive",
+    });
+    if (!ok) return;
 
     try {
       setError(null);
