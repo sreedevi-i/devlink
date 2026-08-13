@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Users, UserMinus, ArrowRightLeft, Shield, Check, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import { useConfirm } from "@/components/confirm/ConfirmProvider";
 import { ProjectMemberRoleBadge, ProjectRole } from "./ProjectMemberRoleBadge";
 
 export interface ProjectMemberData {
@@ -30,6 +31,7 @@ export const ProjectMembersList: React.FC<ProjectMembersListProps> = ({
   const [members, setMembers] = useState<ProjectMemberData[]>([]);
   const [loading, setLoading] = useState(true);
   const [transferringUser, setTransferringUser] = useState<string | null>(null);
+  const confirm = useConfirm();
 
   const fetchMembers = useCallback(async () => {
     setLoading(true);
@@ -127,7 +129,13 @@ export const ProjectMembersList: React.FC<ProjectMembersListProps> = ({
   };
 
   const handleRemoveMember = async (userId: string) => {
-    if (!confirm("Are you sure you want to remove this member from the project?")) return;
+    const ok = await confirm({
+      title: "Remove member?",
+      description: "Are you sure you want to remove this member from the project?",
+      confirmText: "Remove",
+      variant: "destructive",
+    });
+    if (!ok) return;
     try {
       const res = await fetch(`/api/v1/projects/${projectId}/members/${userId}`, {
         method: "DELETE",
