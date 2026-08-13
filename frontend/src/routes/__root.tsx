@@ -15,6 +15,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { I18nProvider } from "@/context/I18nContext";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { AnnouncerProvider } from "@/components/a11y/Announcer";
+import { ConfirmProvider } from "@/components/confirm/ConfirmProvider";
 import { SkipLink } from "@/components/a11y/SkipLink";
 import { applyServiceWorkerUpdate, registerServiceWorker } from "@/lib/pwa";
 
@@ -251,14 +252,16 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
         <AnnouncerProvider>
-          <ThemeProvider defaultTheme="system">
-            {/* First thing in the tab order, so a keyboard user is not made to
-                walk the sidebar and header on every single navigation. */}
-            <SkipLink />
-            <OfflineBanner />
-            <Outlet />
-            <Toaster position="top-right" richColors />
-          </ThemeProvider>
+          <ConfirmProvider>
+            <ThemeProvider defaultTheme="system">
+              {/* First thing in the tab order, so a keyboard user is not made to
+                  walk the sidebar and header on every single navigation. */}
+              <SkipLink />
+              <OfflineBanner />
+              <Outlet />
+              <Toaster position="top-right" richColors />
+            </ThemeProvider>
+          </ConfirmProvider>
         </AnnouncerProvider>
         <AnimatePresence mode="wait" initial={false}>
           <Outlet key={location.pathname} />
