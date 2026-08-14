@@ -52,7 +52,9 @@ export function ConfirmDialog({ open, options, onConfirm, onCancel }: ConfirmDia
           <AlertDialogCancel onClick={onCancel}>{options.cancelText ?? "Cancel"}</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
-            className={cn(options.variant === "destructive" && buttonVariants({ variant: "destructive" }))}
+            className={cn(
+              options.variant === "destructive" && buttonVariants({ variant: "destructive" }),
+            )}
           >
             {options.confirmText ?? "Confirm"}
           </AlertDialogAction>
