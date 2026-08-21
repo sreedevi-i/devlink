@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { BackButton } from "@/components/shared/BackButton";
 import { LoadingButton } from "@/components/shared/LoadingButton";
 import { authApi } from "@/api/modules/auth";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export const Route = createFileRoute("/forgot-password")({
   head: () => ({
@@ -46,10 +47,10 @@ function ForgotPassword() {
       </Link>
 
       <div className="w-full max-w-[440px] rounded-md border border-border bg-surface px-8 py-6">
-        <h1 className="text-[18px] font-bold text-foreground">Reset your password</h1>
-        <p className="mt-1 text-[13px] text-muted-foreground">
+        <TypoHeading as="h1">Reset your password</TypoHeading>
+        <TypoCaption as="p">
           Enter your email and we'll send you a reset link.
-        </p>
+        </TypoCaption>
         {sent ? (
           <div className="mt-5 rounded-md border border-success/30 bg-success/10 p-4 text-[13px] text-success">
             Check your inbox — a reset link is on its way.

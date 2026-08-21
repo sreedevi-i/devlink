@@ -1,5 +1,6 @@
 import { Card } from "@/components/shared/primitives";
 import { GraduationCap } from "lucide-react";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export interface EducationEntry {
   school: string;
@@ -19,13 +20,13 @@ export function EducationCard({ education = [] }: EducationCardProps) {
           <GraduationCap size={16} />
         </div>
         <div>
-          <h2 className="text-sm font-semibold text-foreground">Education</h2>
-          <p className="text-xs text-muted-foreground">Academic background</p>
+          <TypoHeading as="h2">Education</TypoHeading>
+          <TypoCaption as="p">Academic background</TypoCaption>
         </div>
       </div>
 
       {education.length === 0 ? (
-        <p className="mt-4 text-sm text-muted-foreground">No education added yet.</p>
+        <TypoCaption as="p">No education added yet.</TypoCaption>
       ) : (
         <div className="mt-4 space-y-3">
           {education.map((entry) => (
@@ -35,10 +36,10 @@ export function EducationCard({ education = [] }: EducationCardProps) {
             >
               <p className="text-sm font-semibold text-foreground">{entry.school}</p>
               {entry.degree ? (
-                <p className="mt-1 text-sm text-muted-foreground">{entry.degree}</p>
+                <TypoCaption as="p">{entry.degree}</TypoCaption>
               ) : null}
               {entry.years ? (
-                <p className="mt-1 text-xs text-muted-foreground">{entry.years}</p>
+                <TypoCaption as="p">{entry.years}</TypoCaption>
               ) : null}
             </div>
           ))}

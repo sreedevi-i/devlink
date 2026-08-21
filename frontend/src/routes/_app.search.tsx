@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Search, X, Trophy, GitBranch, Rss, History } from "lucide-react";
 import { useGlobalSearch } from "@/hooks/useGlobalSearch";
 import api from "@/lib/api";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 const tabs = ["Developers", "Projects", "Posts", "Messages", "Hackathons", "Repositories"] as const;
 type Tab = (typeof tabs)[number];
@@ -142,10 +143,10 @@ function SearchPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-[22px] font-bold tracking-tight text-foreground">Global Search</h1>
-        <p className="text-[13px] text-muted-foreground">
+        <TypoHeading as="h1">Global Search</TypoHeading>
+        <TypoCaption as="p">
           Find developers, projects, posts, messages, hackathons, and repositories.
-        </p>
+        </TypoCaption>
       </div>
 
       <div className="relative">
@@ -245,7 +246,7 @@ function SearchPage() {
       {loading ? (
         <div className="flex flex-col items-center justify-center p-12 text-center col-span-full">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="mt-4 text-[13px] text-muted-foreground">Searching devlink...</p>
+          <TypoCaption as="p">Searching devlink...</TypoCaption>
         </div>
       ) : error ? (
         <Card className="p-5 text-center text-[13px] text-destructive col-span-full">
@@ -272,7 +273,7 @@ function SearchPage() {
                         <p className="truncate text-[13px] font-semibold text-foreground">
                           <HighlightText text={b.name} query={q} />
                         </p>
-                        <p className="truncate text-[12px] text-muted-foreground">{b.role}</p>
+                        <TypoCaption as="p">{b.role}</TypoCaption>
                         <div className="mt-1 flex flex-wrap gap-1">
                           {b.skills.slice(0, 3).map((s) => (
                             <TagChip key={s} className="text-[10px]">
@@ -309,9 +310,9 @@ function SearchPage() {
                           <p className="truncate text-[13px] font-semibold text-foreground">
                             <HighlightText text={p.name} query={q} />
                           </p>
-                          <p className="truncate text-[12px] text-muted-foreground mt-0.5">
+                          <TypoCaption as="p">
                             <HighlightText text={p.description} query={q} />
-                          </p>
+                          </TypoCaption>
                           <div className="mt-2 flex flex-wrap gap-1">
                             {p.stack.map((s) => (
                               <TagChip key={s} className="text-[10px]">
@@ -376,9 +377,9 @@ function SearchPage() {
                         <p className="text-[13px] font-semibold text-foreground">
                           <HighlightText text={`Chat with ${c.with.name}`} query={q} />
                         </p>
-                        <p className="text-[12px] text-muted-foreground truncate mt-0.5">
+                        <TypoCaption as="p">
                           <HighlightText text={c.preview} query={q} />
-                        </p>
+                        </TypoCaption>
                       </div>
                     </Card>
                   </Link>
@@ -405,9 +406,9 @@ function SearchPage() {
                             {h.prize}
                           </span>
                         </div>
-                        <p className="text-[12px] text-muted-foreground mt-1">
+                        <TypoCaption as="p">
                           <HighlightText text={h.description} query={q} />
-                        </p>
+                        </TypoCaption>
                       </div>
                     </Card>
                   </Link>
@@ -430,14 +431,14 @@ function SearchPage() {
                           <p className="truncate text-[13px] font-semibold text-foreground">
                             <HighlightText text={r.name} query={q} />
                           </p>
-                          <span className="text-[11px] text-muted-foreground">⭐ {r.stars}</span>
+                          <TypoCaption>⭐ {r.stars}</TypoCaption>
                         </div>
-                        <p className="text-[12px] text-muted-foreground mt-1">
+                        <TypoCaption as="p">
                           <HighlightText text={r.description} query={q} />
-                        </p>
-                        <span className="mt-2 inline-block rounded bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                        </TypoCaption>
+                        <TypoCaption>
                           {r.language}
-                        </span>
+                        </TypoCaption>
                       </div>
                     </Card>
                   </Link>

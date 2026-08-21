@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { TypoSection, TypoCard } from "@/components/shared/Typography";
 
 const LANGUAGES = [
   "JavaScript",
@@ -55,19 +56,19 @@ export function ProjectFilters() {
 
   const handleLanguageChange = (lang: string, checked: boolean) => {
     const current = filters.language || [];
-    const next = checked ? [...current, lang] : current.filter((l) => l !== lang);
+    const next = checked ? [...current, lang] : current.filter((l: string) => l !== lang);
     setFilters({ language: next });
   };
 
   const handleExperienceChange = (exp: string, checked: boolean) => {
     const current = filters.experience || [];
-    const next = checked ? [...current, exp] : current.filter((e) => e !== exp);
+    const next = checked ? [...current, exp] : current.filter((e: string) => e !== exp);
     setFilters({ experience: next });
   };
 
   const handleTechToggle = (tech: string) => {
     const current = filters.tech || [];
-    const next = current.includes(tech) ? current.filter((t) => t !== tech) : [...current, tech];
+    const next = current.includes(tech) ? current.filter((t: string) => t !== tech) : [...current, tech];
     setFilters({ tech: next });
   };
 
@@ -76,7 +77,7 @@ export function ProjectFilters() {
   return (
     <div className="rounded-lg border border-border bg-card p-5 my-4 flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-[15px] font-semibold text-foreground">Filters</h3>
+        <TypoSection>Filters</TypoSection>
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
@@ -90,7 +91,7 @@ export function ProjectFilters() {
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {/* Language Filter */}
         <div className="space-y-4">
-          <h4 className="text-[13px] font-medium text-foreground">Language</h4>
+          <TypoCard>Language</TypoCard>
           <div className="flex flex-col gap-3">
             {LANGUAGES.map((lang) => (
               <div key={lang} className="flex items-center gap-2">
@@ -112,7 +113,7 @@ export function ProjectFilters() {
 
         {/* Experience Filter */}
         <div className="space-y-4">
-          <h4 className="text-[13px] font-medium text-foreground">Experience Level</h4>
+          <TypoCard>Experience Level</TypoCard>
           <div className="flex flex-col gap-3">
             {EXPERIENCES.map((exp) => (
               <div key={exp} className="flex items-center gap-2">
@@ -137,7 +138,7 @@ export function ProjectFilters() {
         {/* Additional Filters */}
         <div className="space-y-6">
           <div className="space-y-4">
-            <h4 className="text-[13px] font-medium text-foreground">Project Details</h4>
+            <TypoCard>Project Details</TypoCard>
 
             <div className="flex items-center justify-between">
               <label htmlFor="remote-toggle" className="text-[13px] font-medium cursor-pointer">
@@ -174,7 +175,7 @@ export function ProjectFilters() {
           </div>
 
           <div className="space-y-3">
-            <h4 className="text-[13px] font-medium text-foreground">Tech Stack</h4>
+            <TypoCard>Tech Stack</TypoCard>
             <Popover open={techOpen} onOpenChange={setTechOpen}>
               <PopoverTrigger asChild>
                 <button className="flex w-full items-center justify-between rounded-md border border-border bg-surface px-3 py-2 text-[13px] hover:bg-muted">
@@ -216,7 +217,7 @@ export function ProjectFilters() {
               </PopoverContent>
             </Popover>
             <div className="flex flex-wrap gap-1">
-              {(filters.tech || []).map((t) => (
+              {(filters.tech || []).map((t: string) => (
                 <Badge
                   key={t}
                   variant="secondary"

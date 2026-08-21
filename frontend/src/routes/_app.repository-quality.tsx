@@ -6,6 +6,7 @@ import { containerVariants, cardEntrance, STAGGER_DELAY } from "@/lib/animations
 import { repositoryQualityApi } from "@/api";
 import type { RepositoryQualityResponse, MetricScore, ImprovementSuggestion } from "@/api";
 import { cn } from "@/lib/utils";
+import { TypoSection, TypoCaption, TypoCard, TypoHeading } from "@/components/shared/Typography";
 import {
   Search,
   Star,
@@ -102,10 +103,10 @@ function MetricCard({ metric, index }: { metric: MetricScore; index: number }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-foreground">{metric.label}</h3>
-            <span className="text-xs font-bold text-muted-foreground">
+            <TypoSection>{metric.label}</TypoSection>
+            <TypoCaption>
               {Math.round(metric.weight * 100)}%
-            </span>
+            </TypoCaption>
           </div>
           <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
             <motion.div
@@ -116,7 +117,7 @@ function MetricCard({ metric, index }: { metric: MetricScore; index: number }) {
             />
           </div>
           <div className="mt-1.5 flex items-center justify-between">
-            <p className="text-[11px] text-muted-foreground truncate pr-2">{metric.description}</p>
+            <TypoCaption as="p">{metric.description}</TypoCaption>
             <span className="text-xs font-bold tabular-nums">{percentage}%</span>
           </div>
         </div>
@@ -142,7 +143,7 @@ function SuggestionCard({
         <div className="mt-0.5 shrink-0">{getPriorityIcon(suggestion.priority)}</div>
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h4 className="text-sm font-semibold text-foreground">{suggestion.title}</h4>
+            <TypoCard>{suggestion.title}</TypoCard>
             <span
               className={cn(
                 "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase",
@@ -154,9 +155,9 @@ function SuggestionCard({
               {suggestion.priority}
             </span>
           </div>
-          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+          <TypoCaption as="p">
             {suggestion.description}
-          </p>
+          </TypoCaption>
         </div>
       </div>
     </motion.div>
@@ -194,9 +195,9 @@ function ResultDisplay({ result }: { result: RepositoryQualityResponse }) {
               </a>
             </div>
             {repository_info.description && (
-              <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+              <TypoCaption as="p">
                 {repository_info.description}
-              </p>
+              </TypoCaption>
             )}
             <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-1">
@@ -253,9 +254,9 @@ function ResultDisplay({ result }: { result: RepositoryQualityResponse }) {
                 </span>
               </div>
             </div>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <TypoCaption as="p">
               {Math.round(result.overall_score * 100)}% overall
-            </p>
+            </TypoCaption>
           </div>
         </div>
       </motion.div>
@@ -267,14 +268,14 @@ function ResultDisplay({ result }: { result: RepositoryQualityResponse }) {
       >
         <div className="flex items-center gap-2 mb-3">
           <Sparkles className="h-4 w-4 text-primary" />
-          <h2 className="text-sm font-semibold text-foreground">AI Summary</h2>
+          <TypoHeading as="h2">AI Summary</TypoHeading>
         </div>
-        <p className="text-sm leading-relaxed text-muted-foreground">{result.summary}</p>
+        <TypoCaption as="p">{result.summary}</TypoCaption>
       </motion.div>
 
       {/* Metrics */}
       <div>
-        <h2 className="mb-3 text-sm font-semibold text-foreground">Metric Breakdown</h2>
+        <TypoHeading as="h2">Metric Breakdown</TypoHeading>
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -290,7 +291,7 @@ function ResultDisplay({ result }: { result: RepositoryQualityResponse }) {
       {/* Suggestions */}
       {result.suggestions.length > 0 && (
         <div>
-          <h2 className="mb-3 text-sm font-semibold text-foreground">Improvement Suggestions</h2>
+          <TypoHeading as="h2">Improvement Suggestions</TypoHeading>
           <motion.div
             variants={containerVariants}
             initial="hidden"
@@ -323,13 +324,13 @@ function RepositoryQualityPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
       <div className="mb-8 text-center">
-        <h1 className="text-2xl font-black text-foreground sm:text-3xl">
+        <TypoHeading as="h1">
           Repository Quality Analyzer
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        </TypoHeading>
+        <TypoCaption as="p">
           Analyze any GitHub repository and get a comprehensive quality score with actionable
           improvement suggestions.
-        </p>
+        </TypoCaption>
       </div>
 
       <form onSubmit={handleSubmit} className="mb-8">
@@ -372,9 +373,9 @@ function RepositoryQualityPage() {
       {!mutation.data && !mutation.isPending && !mutation.isError && (
         <div className="rounded-3xl border border-dashed border-border bg-card/50 p-12 text-center">
           <Sparkles className="mx-auto h-10 w-10 text-muted-foreground/50" />
-          <p className="mt-4 text-sm text-muted-foreground">
+          <TypoCaption as="p">
             Enter a GitHub repository URL above to analyze its quality.
-          </p>
+          </TypoCaption>
         </div>
       )}
     </div>

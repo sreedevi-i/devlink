@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Optional
 
 # pyrefly: ignore [missing-import]
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 
 from app.models.message import MessageType
 
@@ -18,6 +18,14 @@ class MessageBase(BaseModel):
     attachment_name: Optional[str] = None
     attachment_size: Optional[int] = None
     mime_type: Optional[str] = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def map_message_to_content(cls, data: any) -> any:
+        if isinstance(data, dict):
+            if "message" in data and "content" not in data:
+                data["content"] = data["message"]
+        return data
 
 
 class MessageCreate(MessageBase):
@@ -42,3 +50,15 @@ class MessageResponse(MessageBase):
     updated_at: datetime
     edited_at: Optional[datetime] = None
     deleted_at: Optional[datetime] = None
+    read_at: Optional[datetime] = None
+
+
+class BulkReadRequest(BaseModel):
+    message_ids: Optional[list[uuid.UUID]] = None
+    conversation_id: Optional[uuid.UUID] = None
+
+
+class BulkReadResponse(BaseModel):
+    updated_count: int
+    read_at: datetime
+

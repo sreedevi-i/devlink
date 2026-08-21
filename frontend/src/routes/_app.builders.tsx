@@ -23,7 +23,6 @@ import { cn } from "@/lib/utils";
 
 import {
   ArrowRight,
-  BadgeCheck,
   Bookmark,
   Briefcase,
   Calendar,
@@ -31,9 +30,11 @@ import {
   Search,
   Sparkles,
   UsersRound,
+  BadgeCheck,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { containerVariants } from "@/lib/animations";
+import { TypoSection, TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export const Route = createFileRoute("/_app/builders")({
   head: () => ({
@@ -109,19 +110,22 @@ function AIMatchCard({ builder }: { builder: Builder }) {
               params={{ builderId: builder.id }}
               className="block hover:underline"
             >
-              <h3 className="font-bold text-foreground text-[20px] leading-tight truncate flex items-center gap-1">
+              <TypoSection>
                 {builder.name}
                 {builder.verified && (
                   <BadgeCheck
-                    className="text-primary shrink-0 h-5 w-5"
-                    aria-label="Verified User"
+                    className={cn(
+                      "shrink-0 h-5 w-5",
+                      builder.premium ? "text-amber-500 fill-amber-500/10 animate-pulse" : "text-primary"
+                    )}
+                    aria-label={builder.premium ? "Premium Verified User" : "Verified User"}
                   />
                 )}
-              </h3>
+              </TypoSection>
             </Link>
-            <p className="text-muted-foreground text-[13px] font-medium mt-0.5 truncate">
+            <TypoCaption as="p">
               {builder.role}
-            </p>
+            </TypoCaption>
           </div>
           <button
             type="button"
@@ -174,27 +178,27 @@ function AIMatchCard({ builder }: { builder: Builder }) {
               <Sparkles size={14} className="text-primary shrink-0" />
               <span>{matchPercentage}</span>
             </p>
-            <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mt-1">
+            <TypoCaption as="p">
               Match
-            </p>
+            </TypoCaption>
           </div>
           <div className="border-x border-border/50">
             <p className="text-[14px] font-bold text-foreground flex items-center justify-center gap-0.5">
               <Briefcase size={14} className="text-primary shrink-0" />
               <span>{experienceText}</span>
             </p>
-            <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mt-1">
+            <TypoCaption as="p">
               Experience
-            </p>
+            </TypoCaption>
           </div>
           <div>
             <p className="text-[14px] font-bold text-foreground flex items-center justify-center gap-0.5">
               <Calendar size={14} className="text-primary shrink-0" />
               <span>{availabilityText}</span>
             </p>
-            <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mt-1">
+            <TypoCaption as="p">
               Availability
-            </p>
+            </TypoCaption>
           </div>
         </div>
       </div>
@@ -237,10 +241,10 @@ function BuilderRecommendationsEmptyState({ onExplore }: { onExplore: () => void
         >
           We’re finding your best collaborators
         </h2>
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">
+        <TypoCaption as="p">
           We don’t have a recommendation for you yet. Explore the community to discover builders who
           share your interests and skills.
-        </p>
+        </TypoCaption>
         <button
           type="button"
           onClick={onExplore}
@@ -311,8 +315,8 @@ function BuildersPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-[22px] font-bold tracking-tight text-foreground">Builders</h1>
-        <p className="text-[13px] text-muted-foreground">Find your next collaborator.</p>
+        <TypoHeading as="h1">Builders</TypoHeading>
+        <TypoCaption as="p">Find your next collaborator.</TypoCaption>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -414,17 +418,20 @@ function BuildersPage() {
                       <HighlightText text={b.name} query={q} />
                       {b.verified && (
                         <BadgeCheck
-                          className="text-primary h-3.5 w-3.5"
-                          aria-label="Verified User"
+                          className={cn(
+                            "h-3.5 w-3.5 shrink-0",
+                            b.premium ? "text-amber-500 fill-amber-500/10 animate-pulse" : "text-primary"
+                          )}
+                          aria-label={b.premium ? "Premium Verified User" : "Verified User"}
                         />
                       )}
                     </p>
-                    <p className="text-[12px] text-muted-foreground">
+                    <TypoCaption as="p">
                       <HighlightText text={b.role} query={q} />
-                    </p>
-                    <p className="text-[11px] text-muted-foreground">
+                    </TypoCaption>
+                    <TypoCaption as="p">
                       {b.country} · {b.yearsExp} yrs
-                    </p>
+                    </TypoCaption>
                     <LastActive lastActiveAt={b.lastActiveAt} className="mt-1 justify-center" />
                     <div className="mt-2 flex flex-wrap justify-center gap-1">
                       {b.skills.slice(0, 3).map((s) => (

@@ -1,5 +1,6 @@
 import React from "react";
 import { Award, Rocket, Users, Sparkles, HeartHandshake, Star } from "lucide-react";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export interface BadgeItem {
   id: string;
@@ -40,10 +41,10 @@ export const BadgeDisplay: React.FC<BadgeDisplayProps> = ({ userBadges, allBadge
   return (
     <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-6 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+        <TypoHeading as="h2">
           <Award className="h-5 w-5 text-amber-500" />
           Achievement Badges
-        </h2>
+        </TypoHeading>
         <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
           {userBadges.length} Earned
         </span>
@@ -73,8 +74,10 @@ export const BadgeDisplay: React.FC<BadgeDisplayProps> = ({ userBadges, allBadge
               >
                 <IconComp className="h-5 w-5" />
               </div>
-              <span className="text-xs font-semibold line-clamp-1 text-foreground">{badge.name}</span>
-              <span className="text-[10px] text-muted-foreground mt-0.5">{badge.points} pts</span>
+              <span className="text-xs font-semibold line-clamp-1 text-foreground">
+                {badge.name}
+              </span>
+              <TypoCaption>{badge.points} pts</TypoCaption>
             </div>
           );
         })}

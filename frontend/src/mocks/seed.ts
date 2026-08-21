@@ -1,11 +1,16 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 // Realistic seed data for DevLink — used by all mock services.
 // Replace mock services with an HTTP client later; shapes are stable.
 
 export type ID = string;
 
 export type UserRole = "Developer" | "Founder" | "Designer" | "AI Engineer" | "Mentor";
+
+export interface ProfileSkill {
+  name: string;
+  level?: string;
+  category?: string;
+  yearsOfExperience?: number;
+}
 
 export interface Skill {
   name: string;
@@ -39,7 +44,7 @@ export interface Builder {
   lastActiveAt: string | null;
   publicEmail?: string;
   verified?: boolean;
-  pinnedProjects?: string[];
+  premium?: boolean;
   contributions?: number;
   followers?: number;
   following?: number;
@@ -113,6 +118,8 @@ export interface Flare {
   likes: number;
   comments: number;
   ago: string;
+  status?: string;
+  publish_at?: string;
 }
 export interface Conversation {
   id: ID;
@@ -126,6 +133,11 @@ export interface Message {
   from: ID;
   text: string;
   at: string;
+  type?: string;
+  attachment_url?: string;
+  attachment_name?: string;
+  attachment_size?: number;
+  mime_type?: string;
 }
 export interface Notification {
   id: ID;
@@ -209,6 +221,15 @@ export const builders: Builder[] = [
     yearsExp: 3,
     matchScore: 92,
     skills: ["React", "Next.js", "TypeScript"],
+    profileSkills: [
+      { name: "TypeScript", level: "Expert", category: "Languages", yearsOfExperience: 4 },
+      { name: "React", level: "Expert", category: "Frameworks", yearsOfExperience: 4 },
+      { name: "Next.js", level: "Advanced", category: "Frameworks", yearsOfExperience: 3 },
+      { name: "PostgreSQL", level: "Intermediate", category: "Databases", yearsOfExperience: 2 },
+      { name: "AWS", level: "Intermediate", category: "Cloud", yearsOfExperience: 2 },
+      { name: "Docker", level: "Advanced", category: "DevOps", yearsOfExperience: 3 },
+      { name: "Tailwind CSS", level: "Expert", category: "Design", yearsOfExperience: 4 },
+    ],
     badges: ["Top Contributor", "Social Butterfly"],
     online: true,
     bio: "Loves accessible UIs and design systems.",
@@ -220,7 +241,6 @@ export const builders: Builder[] = [
     followers: 238,
     following: 124,
     language: ["English", "Hindi"],
-    pinnedProjects: ["AI Chatbot", "DevOps Dashboard"],
     experience: [
       {
         company: "Google",
@@ -378,12 +398,6 @@ export const projects: Project[] = [
     owner: "Nancy Patel",
     members: 4,
     stars: 24,
-    forks: 12,
-    progress: 75,
-    status: "active",
-    icon: "🤖",
-    language: "JavaScript",
-    difficulty: "intermediate",
     views: 1042,
     forks: 12,
     progress: 75,
@@ -407,12 +421,6 @@ export const projects: Project[] = [
     owner: "Nancy Patel",
     members: 6,
     stars: 18,
-    forks: 8,
-    progress: 40,
-    status: "active",
-    icon: "✨",
-    language: "Python",
-    difficulty: "advanced",
     views: 890,
     forks: 8,
     progress: 40,
@@ -436,12 +444,6 @@ export const projects: Project[] = [
     owner: "Nancy Patel",
     members: 3,
     stars: 16,
-    forks: 6,
-    progress: 60,
-    status: "active",
-    icon: "🚀",
-    language: "Go",
-    difficulty: "advanced",
     views: 521,
     forks: 6,
     progress: 60,
@@ -464,12 +466,6 @@ export const projects: Project[] = [
     owner: "Nancy Patel",
     members: 5,
     stars: 14,
-    forks: 7,
-    progress: 25,
-    status: "planning",
-    icon: "🪙",
-    language: "TypeScript",
-    difficulty: "advanced",
     views: 310,
     forks: 7,
     progress: 25,
@@ -493,12 +489,6 @@ export const projects: Project[] = [
     owner: "Nancy Patel",
     members: 2,
     stars: 12,
-    forks: 5,
-    progress: 90,
-    status: "active",
-    icon: "🧩",
-    language: "TypeScript",
-    difficulty: "beginner",
     views: 180,
     forks: 5,
     progress: 90,
@@ -521,12 +511,6 @@ export const projects: Project[] = [
     owner: "Community",
     members: 8,
     stars: 240,
-    forks: 96,
-    progress: 100,
-    status: "shipped",
-    icon: "📇",
-    language: "JavaScript",
-    difficulty: "intermediate",
     views: 5040,
     forks: 96,
     progress: 100,
@@ -842,6 +826,15 @@ export const currentUser = {
   avatar: AV("Nancy"),
   premium: true,
   verified: true,
+  profileSkills: [
+    { name: "TypeScript", level: "Expert", category: "Languages", yearsOfExperience: 4 },
+    { name: "React", level: "Expert", category: "Frameworks", yearsOfExperience: 4 },
+    { name: "Python", level: "Advanced", category: "Languages", yearsOfExperience: 3 },
+    { name: "FastAPI", level: "Advanced", category: "Frameworks", yearsOfExperience: 3 },
+    { name: "PostgreSQL", level: "Intermediate", category: "Databases", yearsOfExperience: 2 },
+    { name: "AWS", level: "Intermediate", category: "Cloud", yearsOfExperience: 2 },
+    { name: "Docker", level: "Advanced", category: "DevOps", yearsOfExperience: 3 },
+  ],
 };
 
 export const stats = [
@@ -856,3 +849,18 @@ export const stats = [
   { key: "hackathons", label: "Hackathons", value: 4, icon: "trophy", tint: "warning" },
   { key: "ai", label: "AI Match Score", value: "96%", icon: "sparkles", tint: "primary" },
 ] as const;
+
+export interface QuickAction {
+  id: ID;
+  iconName: string;
+  label: string;
+  to: string;
+}
+
+export const quickActions: QuickAction[] = [
+  { id: "qa1", iconName: "FolderPlus", label: "Continue current project", to: "/projects/p1" },
+  { id: "qa2", iconName: "Users2", label: "Review applications", to: "/projects" },
+  { id: "qa3", iconName: "Flame", label: "Publish flare", to: "/flares" },
+  { id: "qa4", iconName: "UserPlus", label: "Invite recommended builder", to: "/builders" },
+];
+

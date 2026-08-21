@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
+import { TypoCaption } from "@/components/shared/Typography";
 
 interface EmptyStateProps {
   title: string;
@@ -41,7 +42,7 @@ export function EmptyState({
         )}
       </div>
       <p className="text-[14px] font-semibold text-foreground">{title}</p>
-      {desc && <p className="mt-1 max-w-xs text-[13px] text-muted-foreground">{desc}</p>}
+      {desc && <TypoCaption as="p">{desc}</TypoCaption>}
       {action && <div className="mt-4">{action}</div>}
     </div>
   );

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useCallback, useEffect } from "react";
 import { Eye, EyeOff, Github, Linkedin } from "lucide-react";
@@ -10,6 +8,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { LoadingButton } from "@/components/shared/LoadingButton";
 import { authApi } from "@/api/modules/auth";
+import { TypoCaption } from "@/components/shared/Typography";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
@@ -102,17 +101,35 @@ function AuthScreen() {
       toast.error("Unable to start sign-in. Please try again.");
     }
   }, []);
-  const onSubmit = useCallback(async () => {
-    if (submitting) return;
-    setSubmitting(true);
-    try {
-      await new Promise((r) => setTimeout(r, 800));
-      toast.success(mode === "signin" ? "Signed in" : "Account created");
-      navigate({ to: "/dashboard" });
-    } finally {
-      setSubmitting(false);
-    }
-  }, [submitting, mode, navigate]);
+  const onSubmit = useCallback(
+    async (data: any) => {
+      if (submitting) return;
+      setSubmitting(true);
+      try {
+        if (mode === "signin") {
+          await authApi.login({ email: data.email, password: data.password });
+          toast.success("Signed in");
+        } else {
+          await authApi.register({
+            email: data.email,
+            username: data.username,
+            password: data.password,
+            full_name: `${data.firstName} ${data.lastName}`,
+          });
+          toast.success("Account created");
+        }
+        navigate({ to: "/dashboard" });
+      } catch (error: any) {
+        toast.error(
+          error?.response?.data?.detail ||
+            (mode === "signin" ? "Invalid credentials" : "Sign-up failed"),
+        );
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [submitting, mode, navigate],
+  );
 
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center overflow-y-auto bg-background px-4 py-8">
@@ -152,7 +169,7 @@ function AuthScreen() {
         </button>
         <div className="mb-5 flex items-center gap-3">
           <div className="h-px flex-1 bg-border" />
-          <span className="text-[12px] text-muted-foreground">Or</span>
+          <TypoCaption>Or</TypoCaption>
           <div className="h-px flex-1 bg-border" />
         </div>
         {mode === "signin" ? (
@@ -223,13 +240,7 @@ function AuthScreen() {
                 )}
               </div>
             </div>
-            <div className="mb-4">
-              <label className={lbl}>Username</label>
-              <input className={inp} {...signUpForm.register("username")} />
-              {signUpForm.formState.errors.username && (
-                <p className={err}>{signUpForm.formState.errors.username.message}</p>
-              )}
-            </div>
+
             <div className="mb-4">
               <label className={lbl}>Email</label>
               <input type="email" className={inp} {...signUpForm.register("email")} />
@@ -287,7 +298,7 @@ function AuthScreen() {
             </LoadingButton>
           </form>
         )}
-        <p className="mt-2 text-center text-[13px] text-muted-foreground">
+        <TypoCaption as="p">
           {mode === "signin" ? (
             <>
               Don't have an account?{" "}
@@ -309,7 +320,7 @@ function AuthScreen() {
               </button>
             </>
           )}
-        </p>
+        </TypoCaption>
       </div>
 
       <div className="mt-3 flex items-center gap-5">

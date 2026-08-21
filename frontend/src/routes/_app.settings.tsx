@@ -7,6 +7,7 @@ import { ImageCropUploadModal } from "@/components/shared/ImageCropUploadModal";
 import { useConfirm } from "@/components/confirm/ConfirmProvider";
 import { OAuthAccountsSection } from "@/components/settings/OAuthAccountsSection";
 import { MFASection } from "@/features/settings/components/MFASection";
+import { UserSessionsActivity } from "@/components/settings/UserSessionsActivity";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -31,6 +32,7 @@ import { toast } from "sonner";
 import { currentUser } from "@/mocks/seed";
 import { LoadingButton } from "@/components/shared/LoadingButton";
 import { exportApi } from "@/api";
+import { TypoSection, TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 const tabs = [
   { id: "account", label: "Account", icon: User },
@@ -113,10 +115,10 @@ function SettingsPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-6 py-6">
       <div className="px-0">
-        <h1 className="text-[24px] font-bold tracking-tight text-foreground">Settings</h1>
-        <p className="mt-1 text-[14px] text-muted-foreground">
+        <TypoHeading as="h1">Settings</TypoHeading>
+        <TypoCaption as="p">
           Manage your account settings and preferences
-        </p>
+        </TypoCaption>
       </div>
 
       <Separator />
@@ -147,16 +149,16 @@ function SettingsPage() {
             {tab === "account" && (
               <div className="p-6 space-y-6">
                 <div>
-                  <h2 className="text-[16px] font-semibold text-foreground">Profile</h2>
-                  <p className="text-[13px] text-muted-foreground mt-0.5">
+                  <TypoHeading as="h2">Profile</TypoHeading>
+                  <TypoCaption as="p">
                     Manage your public profile information
-                  </p>
+                  </TypoCaption>
                 </div>
 
                 <div className="rounded-lg border border-border bg-muted/30 p-5 space-y-4">
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <TypoSection>
                     Profile Media
-                  </h3>
+                  </TypoSection>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="flex flex-col items-center gap-3 rounded-lg border border-border bg-card p-5 text-center">
                       <UserAvatar
@@ -168,11 +170,11 @@ function SettingsPage() {
                       />
                       <div>
                         <p className="text-sm font-medium text-foreground">Avatar</p>
-                        <p className="text-xs text-muted-foreground">Recommended: 400x400px</p>
+                        <TypoCaption as="p">Recommended: 400x400px</TypoCaption>
                         <p className="text-xs font-semibold text-foreground">Avatar Photo</p>
-                        <p className="text-[11px] text-muted-foreground">
+                        <TypoCaption as="p">
                           Drag & drop or crop before upload
-                        </p>
+                        </TypoCaption>
                       </div>
                       <Button
                         type="button"
@@ -199,11 +201,11 @@ function SettingsPage() {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-foreground">Banner</p>
-                        <p className="text-xs text-muted-foreground">Recommended: 1200x400px</p>
+                        <TypoCaption as="p">Recommended: 1200x400px</TypoCaption>
                         <p className="text-xs font-semibold text-foreground">Header Banner</p>
-                        <p className="text-[11px] text-muted-foreground">
+                        <TypoCaption as="p">
                           3:1 aspect ratio landscape
-                        </p>
+                        </TypoCaption>
                       </div>
                       <Button
                         type="button"
@@ -268,9 +270,9 @@ function SettingsPage() {
                       defaultValue="Product engineer. React / Postgres / Rust."
                       placeholder="Tell us about yourself"
                     />
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <TypoCaption as="p">
                       Brief description for your profile
-                    </p>
+                    </TypoCaption>
                   </div>
                   <div className="flex items-center gap-3 pt-2">
                     <Button type="submit" className="gap-2" disabled={savingAccount}>
@@ -292,13 +294,13 @@ function SettingsPage() {
                 <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-5 space-y-3">
                   <div className="flex items-start justify-between gap-4">
                     <div className="space-y-1">
-                      <h3 className="text-sm font-semibold text-destructive flex items-center gap-1.5">
+                      <TypoSection>
                         <Trash2 size={15} /> Delete account
-                      </h3>
-                      <p className="text-xs text-muted-foreground">
+                      </TypoSection>
+                      <TypoCaption as="p">
                         Permanently delete your account and all associated data. This action cannot
                         be undone.
-                      </p>
+                      </TypoCaption>
                     </div>
                     <Button
                       variant="destructive"
@@ -331,19 +333,19 @@ function SettingsPage() {
             {tab === "appearance" && (
               <div className="p-6 space-y-6">
                 <div>
-                  <h2 className="text-[16px] font-semibold text-foreground">Appearance</h2>
-                  <p className="text-[13px] text-muted-foreground mt-0.5">
+                  <TypoHeading as="h2">Appearance</TypoHeading>
+                  <TypoCaption as="p">
                     Customize how DevLink looks for you
-                  </p>
+                  </TypoCaption>
                 </div>
 
                 <div className="space-y-5">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-foreground">Theme</p>
-                      <p className="text-xs text-muted-foreground">
+                      <TypoCaption as="p">
                         Select your preferred color scheme
-                      </p>
+                      </TypoCaption>
                     </div>
                     <div className="flex gap-2">
                       <Button variant="default" size="sm" className="gap-2">
@@ -363,9 +365,9 @@ function SettingsPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-foreground">Reduced motion</p>
-                      <p className="text-xs text-muted-foreground">
+                      <TypoCaption as="p">
                         Minimize animations across the interface
-                      </p>
+                      </TypoCaption>
                     </div>
                     <Switch />
                   </div>
@@ -373,9 +375,9 @@ function SettingsPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-foreground">Compact mode</p>
-                      <p className="text-xs text-muted-foreground">
+                      <TypoCaption as="p">
                         Reduce spacing for a denser layout
-                      </p>
+                      </TypoCaption>
                     </div>
                     <Switch />
                   </div>
@@ -386,17 +388,17 @@ function SettingsPage() {
             {tab === "notifications" && (
               <div className="p-6 space-y-6">
                 <div>
-                  <h2 className="text-[16px] font-semibold text-foreground">Notifications</h2>
-                  <p className="text-[13px] text-muted-foreground mt-0.5">
+                  <TypoHeading as="h2">Notifications</TypoHeading>
+                  <TypoCaption as="p">
                     Choose what notifications you receive
-                  </p>
+                  </TypoCaption>
                 </div>
 
                 <div className="space-y-5">
                   <div>
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                    <TypoSection>
                       Push notifications
-                    </h3>
+                    </TypoSection>
                     <div className="space-y-4">
                       {[
                         {
@@ -428,7 +430,7 @@ function SettingsPage() {
                             >
                               {item.label}
                             </Label>
-                            <p className="text-xs text-muted-foreground">{item.desc}</p>
+                            <TypoCaption as="p">{item.desc}</TypoCaption>
                           </div>
                           <Switch
                             id={item.key}
@@ -447,9 +449,9 @@ function SettingsPage() {
                   <Separator />
 
                   <div>
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                    <TypoSection>
                       Email notifications
-                    </h3>
+                    </TypoSection>
                     <div className="space-y-4">
                       {[
                         {
@@ -471,7 +473,7 @@ function SettingsPage() {
                             >
                               {item.label}
                             </Label>
-                            <p className="text-xs text-muted-foreground">{item.desc}</p>
+                            <TypoCaption as="p">{item.desc}</TypoCaption>
                           </div>
                           <Switch
                             id={item.key}
@@ -500,10 +502,10 @@ function SettingsPage() {
             {tab === "security" && (
               <div className="p-6 space-y-6">
                 <div>
-                  <h2 className="text-[16px] font-semibold text-foreground">Security</h2>
-                  <p className="text-[13px] text-muted-foreground mt-0.5">
+                  <TypoHeading as="h2">Security</TypoHeading>
+                  <TypoCaption as="p">
                     Manage your password and account security
-                  </p>
+                  </TypoCaption>
                 </div>
 
                 <form
@@ -576,66 +578,24 @@ function SettingsPage() {
 
                 <Separator />
 
-                <div className="space-y-4">
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Active sessions
-                  </h3>
-                  <div className="rounded-lg border border-border p-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted">
-                          <Shield size={16} className="text-muted-foreground" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">Current session</p>
-                          <p className="text-xs text-muted-foreground">
-                            Chrome on Windows - Active now
-                          </p>
-                        </div>
-                      </div>
-                      <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded">
-                        Active
-                      </span>
-                    </div>
-                    <Separator />
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted">
-                          <Shield size={16} className="text-muted-foreground" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">Mobile session</p>
-                          <p className="text-xs text-muted-foreground">
-                            DevLink App on iOS - 2 days ago
-                          </p>
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="sm" className="text-xs text-muted-foreground">
-                        Revoke
-                      </Button>
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm">
-                    Revoke all sessions
-                  </Button>
-                </div>
+                <UserSessionsActivity />
               </div>
             )}
 
             {tab === "billing" && (
               <div className="p-6 space-y-6">
                 <div>
-                  <h2 className="text-[16px] font-semibold text-foreground">Billing</h2>
-                  <p className="text-[13px] text-muted-foreground mt-0.5">
+                  <TypoHeading as="h2">Billing</TypoHeading>
+                  <TypoCaption as="p">
                     Manage your subscription and payment methods
-                  </p>
+                  </TypoCaption>
                 </div>
 
                 <div className="rounded-lg border border-border p-5 space-y-4">
                   <div className="flex items-start justify-between">
                     <div>
                       <p className="text-sm font-medium text-foreground">Current plan</p>
-                      <p className="text-xs text-muted-foreground">You are on the Pro plan</p>
+                      <TypoCaption as="p">You are on the Pro plan</TypoCaption>
                     </div>
                     <span className="rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
                       Pro
@@ -643,11 +603,11 @@ function SettingsPage() {
                   </div>
                   <Separator />
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Next invoice</span>
+                    <TypoCaption>Next invoice</TypoCaption>
                     <span className="font-medium text-foreground">November 4, 2026</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Amount</span>
+                    <TypoCaption>Amount</TypoCaption>
                     <span className="font-medium text-foreground">$19.00/month</span>
                   </div>
                   <Separator />
@@ -657,8 +617,8 @@ function SettingsPage() {
                 </div>
 
                 <div className="rounded-lg border border-border p-5 space-y-3">
-                  <h3 className="text-sm font-semibold text-foreground">Payment method</h3>
-                  <p className="text-xs text-muted-foreground">No payment method on file</p>
+                  <TypoSection>Payment method</TypoSection>
+                  <TypoCaption as="p">No payment method on file</TypoCaption>
                   <Button variant="outline" size="sm">
                     Add payment method
                   </Button>
@@ -669,19 +629,19 @@ function SettingsPage() {
             {tab === "export" && (
               <div className="p-6 space-y-6">
                 <div>
-                  <h2 className="text-[16px] font-semibold text-foreground">Export Data</h2>
-                  <p className="text-[13px] text-muted-foreground mt-0.5">
+                  <TypoHeading as="h2">Export Data</TypoHeading>
+                  <TypoCaption as="p">
                     Download a copy of your DevLink data
-                  </p>
+                  </TypoCaption>
                 </div>
 
                 <div className="rounded-lg border border-border p-5 space-y-4">
                   <div>
-                    <h3 className="text-sm font-semibold text-foreground">Export your data</h3>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <TypoSection>Export your data</TypoSection>
+                    <TypoCaption as="p">
                       Your data will be exported as a JSON file including your profile, skills,
                       projects, connections, messages, bookmarks, and activity history.
-                    </p>
+                    </TypoCaption>
                   </div>
                   <LoadingButton
                     className="gap-2"

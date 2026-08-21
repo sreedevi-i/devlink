@@ -19,6 +19,7 @@ import { Markdown } from "@/components/shared/Markdown";
 import { Avatar } from "@/components/shared/primitives";
 import { builders } from "@/mocks/seed";
 import { cn } from "@/lib/utils";
+import { TypoCaption } from "@/components/shared/Typography";
 
 export interface MarkdownEditorProps {
   value: string;
@@ -288,9 +289,9 @@ export function MarkdownEditor({
               <Eye size={12} /> Preview
             </TabsTrigger>
           </TabsList>
-          <p className="hidden text-[11px] text-muted-foreground sm:block">
+          <TypoCaption as="p">
             Markdown supported - **bold** _italic_ `code` @mention [link](url)
-          </p>
+          </TypoCaption>
         </div>
 
         {/* ── Write tab ─────────────────────────────────────────────── */}
@@ -356,7 +357,7 @@ export function MarkdownEditor({
                     <Avatar src={user.avatar} alt={user.name} size={20} />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[12px] font-medium">{user.name}</p>
-                      <p className="truncate text-[10px] text-muted-foreground">@{user.id}</p>
+                      <TypoCaption as="p">@{user.id}</TypoCaption>
                     </div>
                   </button>
                 ))}
@@ -375,7 +376,7 @@ export function MarkdownEditor({
             {value.trim() ? (
               <Markdown content={value} />
             ) : (
-              <p className="text-[13px] text-muted-foreground">Nothing to preview yet.</p>
+              <TypoCaption as="p">Nothing to preview yet.</TypoCaption>
             )}
           </div>
         </TabsContent>

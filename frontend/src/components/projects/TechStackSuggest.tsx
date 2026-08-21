@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { useEffect, useState } from "react";
 import { Sparkles, Loader2, ChevronDown, ChevronUp, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { techStackService } from "@/services";
 import type { TechStackRecommendation } from "@/api";
+import { TypoCaption } from "@/components/shared/Typography";
 
 const CATEGORY_COLORS: Record<string, string> = {
   frontend: "bg-primary/10 text-primary border-primary/20",
@@ -182,14 +181,14 @@ export function TechStackSuggest({ projectIdea, onSelect }: TechStackSuggestProp
                         {Math.round(rec.confidence * 100)}%
                       </span>
                     </div>
-                    <p className="mt-0.5 text-[12px] text-muted-foreground">{rec.reason}</p>
+                    <TypoCaption as="p">{rec.reason}</TypoCaption>
                   </div>
                 </div>
               </button>
             ))}
           </div>
 
-          {summary && <p className="text-[12px] text-muted-foreground italic">{summary}</p>}
+          {summary && <TypoCaption as="p">{summary}</TypoCaption>}
         </div>
       )}
     </div>

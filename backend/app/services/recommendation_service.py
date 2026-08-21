@@ -1079,6 +1079,8 @@ class RecommendationService:
                     experience_level=user.experience_level,
                     open_to_work=user.open_to_work,
                     location=user.location,
+                    is_verified=user.is_verified,
+                    premium=user.premium,
                     matched_skills=matched_skill_ids,
                     matched_technologies=matched_techs,
                     contribution_count=candidate.contribution_count,

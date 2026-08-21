@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { EmptyState, SectionHeader, Skeleton } from "@/components/shared/primitives";
 import { cn } from "@/lib/utils";
 import type { BackendActivity } from "@/services";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
+import { TypoCaption } from "@/components/shared/Typography";
 import {
   Activity as ActivityIcon,
   Archive,
@@ -68,14 +67,14 @@ export function ActivityItem({ activity }: { activity: BackendActivity }) {
       </span>
       <div className="min-w-0 flex-1">
         <p className="truncate text-[13px] font-semibold text-foreground">{activity.title}</p>
-        <p className="truncate text-[12px] text-muted-foreground">
+        <TypoCaption as="p">
           {activity.description ?? activity.activity_type.replaceAll("_", " ")}
           {actorName && <span> by {actorName}</span>}
-        </p>
+        </TypoCaption>
       </div>
-      <span className="whitespace-nowrap text-[11px] text-muted-foreground">
+      <TypoCaption>
         {getActivityTime(activity.created_at)}
-      </span>
+      </TypoCaption>
     </li>
   );
 }

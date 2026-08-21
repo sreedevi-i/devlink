@@ -249,3 +249,43 @@ def update_preferences(
         db, user_id=current_user.id, update_in=prefs
     )
     return NotificationPreferenceResponse.model_validate(pref)
+
+
+@router.post(
+    "/{notification_id}/click",
+    response_model=NotificationResponse,
+    summary="Track notification click interaction",
+)
+def track_click(
+    notification_id: uuid.UUID,
+    db: Session = Depends(get_database),
+):
+    notification = NotificationService.get_notification(db, notification_id)
+    if not notification:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    return NotificationService.track_click(db, notification)
+
+
+@router.post(
+    "/{notification_id}/delivered",
+    response_model=NotificationResponse,
+    summary="Track notification delivery status",
+)
+def track_delivered(
+    notification_id: uuid.UUID,
+    db: Session = Depends(get_database),
+):
+    notification = NotificationService.get_notification(db, notification_id)
+    if not notification:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    return NotificationService.track_delivered(db, notification)
+
+
+@router.get(
+    "/analytics/delivery",
+    summary="Get notification delivery and interaction analytics dashboard responses",
+)
+def get_delivery_analytics(
+    db: Session = Depends(get_database),
+):
+    return NotificationService.get_delivery_analytics(db)

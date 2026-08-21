@@ -1,13 +1,13 @@
-// @ts-nocheck
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Github, Globe, CheckCircle2, XCircle, Link2, Unlink, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { TypoSection, TypoCaption } from "@/components/shared/Typography";
 
 export interface OAuthProviderItem {
   provider: string;
-  is_linked: booleanean;
+  is_linked: boolean;
   provider_user_id?: string | null;
 }
 
@@ -140,12 +140,12 @@ export function OAuthAccountsSection() {
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+        <TypoSection>
           <Link2 size={14} /> Connected OAuth Accounts
-        </h3>
-        <p className="text-xs text-muted-foreground mt-0.5">
+        </TypoSection>
+        <TypoCaption as="p">
           Link multiple social logins to your DevLink account for easy sign-in and account recovery.
-        </p>
+        </TypoCaption>
       </div>
 
       <div className="space-y-3">
@@ -174,15 +174,15 @@ export function OAuthAccountsSection() {
                         <CheckCircle2 size={12} /> Connected
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                      <TypoCaption>
                         Not Connected
-                      </span>
+                      </TypoCaption>
                     )}
                   </div>
                   {item.is_linked && item.provider_user_id && (
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                    <TypoCaption as="p">
                       ID: {item.provider_user_id}
-                    </p>
+                    </TypoCaption>
                   )}
                 </div>
               </div>
@@ -201,7 +201,7 @@ export function OAuthAccountsSection() {
                   </Button>
                 ) : (
                   <Button
-                    variant="secondary"
+                    variant="outline"
                     size="sm"
                     disabled={linkingProvider === item.provider}
                     onClick={() => handleLink(item.provider)}

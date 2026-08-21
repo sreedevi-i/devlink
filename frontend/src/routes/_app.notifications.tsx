@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import type { Notification } from "@/services";
+import { TypoSection, TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export const Route = createFileRoute("/_app/notifications")({
   head: () => ({
@@ -135,15 +136,15 @@ function NotificationsPage() {
     <div className="mx-auto max-w-5xl space-y-8 pb-12">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
+          <TypoHeading as="h1">
             Notifications
             {unreadCount > 0 && (
               <span className="flex h-6 items-center justify-center rounded-full bg-primary/10 px-2.5 text-xs font-semibold text-primary">
                 {unreadCount} unread
               </span>
             )}
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">Catch up on what you've missed.</p>
+          </TypoHeading>
+          <TypoCaption as="p">Catch up on what you've missed.</TypoCaption>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -229,7 +230,7 @@ function NotificationsPage() {
                     key={group}
                     className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500"
                   >
-                    <h3 className="text-sm font-semibold text-muted-foreground px-2">{group}</h3>
+                    <TypoSection>{group}</TypoSection>
                     <Card className="overflow-hidden">
                       <ul className="divide-y divide-border">
                         {items.map((n) => {
@@ -270,9 +271,9 @@ function NotificationsPage() {
                                 >
                                   {n.text}
                                 </p>
-                                <p className="mt-1 text-xs text-muted-foreground flex items-center gap-1.5 font-medium">
+                                <TypoCaption as="p">
                                   {n.ago}
-                                </p>
+                                </TypoCaption>
                               </div>
 
                               <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">

@@ -1,8 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useMatch } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { messagesService } from "@/services";
 import { Card, Avatar, EmptyState } from "@/components/shared/primitives";
 import { MessageSquareDashed } from "lucide-react";
+import { TypoCaption } from "@/components/shared/Typography";
 
 export const Route = createFileRoute("/_app/messages")({
   head: () => ({
@@ -19,6 +20,12 @@ function MessagesIndex() {
     queryKey: ["conversations"],
     queryFn: messagesService.conversations,
   });
+
+  const isConversationActive = useMatch({
+    from: "/_app/messages/$conversationId",
+    shouldThrow: false,
+  });
+
   return (
     <div className="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
       <Card className="lg:h-[calc(100vh-8rem)] lg:overflow-y-auto">
@@ -41,10 +48,10 @@ function MessagesIndex() {
                     <p className="truncate text-[13px] font-semibold text-foreground">
                       {c.with.name}
                     </p>
-                    <p className="truncate text-[12px] text-muted-foreground">{c.preview}</p>
+                    <TypoCaption as="p">{c.preview}</TypoCaption>
                   </div>
                   <div className="flex flex-col items-end gap-1">
-                    <span className="text-[11px] text-muted-foreground">{c.ago}</span>
+                    <TypoCaption>{c.ago}</TypoCaption>
                     {c.unread > 0 && (
                       <span className="rounded-full bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
                         {c.unread}
@@ -57,12 +64,16 @@ function MessagesIndex() {
           </ul>
         )}
       </Card>
-      <Card className="flex items-center justify-center p-8">
-        <EmptyState
-          title="Select a conversation"
-          desc="Choose a chat on the left or search builders to start a new conversation."
-        />
-      </Card>
+      {isConversationActive ? (
+        <Outlet />
+      ) : (
+        <Card className="flex items-center justify-center p-8">
+          <EmptyState
+            title="Select a conversation"
+            desc="Choose a chat on the left or search builders to start a new conversation."
+          />
+        </Card>
+      )}
     </div>
   );
 }

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState, useEffect } from "react";
 import {
   Bell,
@@ -20,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { useAuth } from "@/contexts/auth-context";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 // Update the type based on backend
 type NotificationType = string;
@@ -64,7 +64,6 @@ export function NotificationCenter() {
     queryKey: ["notifications"],
     // api.get resolves to the parsed body directly; there is no `.data`
     // envelope to unwrap, and unwrapping one left the panel permanently empty.
-    queryFn: () => api.get<Notification[]>("/api/notifications/"),
     queryFn: async () => {
       return api.get<Notification[]>("/api/notifications/");
     },
@@ -134,11 +133,11 @@ export function NotificationCenter() {
           <p className="text-sm font-medium leading-none text-foreground truncate">
             {notification.title}
           </p>
-          <span className="text-xs text-muted-foreground whitespace-nowrap shrink-0">
+          <TypoCaption>
             {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
-          </span>
+          </TypoCaption>
         </div>
-        <p className="text-sm text-muted-foreground line-clamp-2">{notification.message}</p>
+        <TypoCaption as="p">{notification.message}</TypoCaption>
       </div>
       {!notification.is_read && (
         <div className="shrink-0 flex items-center">
@@ -170,7 +169,7 @@ export function NotificationCenter() {
       >
         <Tabs defaultValue="all" className="w-full">
           <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface">
-            <h2 className="text-sm font-semibold text-foreground">Notifications</h2>
+            <TypoHeading as="h2">Notifications</TypoHeading>
             <div className="flex items-center gap-2">
               <TabsList className="h-8">
                 <TabsTrigger value="all" className="text-xs px-3">
@@ -189,9 +188,9 @@ export function NotificationCenter() {
           </div>
 
           <div className="flex items-center justify-between px-4 py-2 border-b border-border/50 bg-muted/20">
-            <span className="text-xs text-muted-foreground font-medium">
+            <TypoCaption>
               You have {unreadCount} unread notifications
-            </span>
+            </TypoCaption>
             {unreadCount > 0 && (
               <Button
                 variant="ghost"

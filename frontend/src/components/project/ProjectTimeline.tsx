@@ -10,6 +10,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TypoSection, TypoCaption, TypoCard } from "@/components/shared/Typography";
 
 export type TimelineEventType =
   "project_created" | "recruitment_started" | "members_joined" | "milestone_completed" | "archived";
@@ -118,13 +119,13 @@ export function ProjectTimeline({
       className={cn("rounded-xl border border-border bg-card p-6 shadow-sm", className)}
     >
       <div className="mb-6 flex items-center justify-between">
-        <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+        <TypoSection>
           <Calendar className="h-4 w-4 text-primary" aria-hidden="true" />
           {title}
-        </h3>
-        <span className="text-xs text-muted-foreground">
+        </TypoSection>
+        <TypoCaption>
           {events.filter((e) => e.status === "completed").length} of {events.length} completed
-        </span>
+        </TypoCaption>
       </div>
 
       <ol className="relative ml-3 border-l border-border/80 space-y-6" role="list">
@@ -156,7 +157,7 @@ export function ProjectTimeline({
 
               {/* Event Content Card */}
               <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
-                <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <TypoCard>
                   {event.title}
                   {event.status === "completed" && (
                     <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
@@ -169,11 +170,11 @@ export function ProjectTimeline({
                     </span>
                   )}
                   {event.status === "upcoming" && (
-                    <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                    <TypoCaption>
                       Upcoming
-                    </span>
+                    </TypoCaption>
                   )}
-                </h4>
+                </TypoCard>
                 <time
                   dateTime={event.timestamp}
                   className="text-xs text-muted-foreground flex items-center gap-1 shrink-0"
@@ -188,9 +189,9 @@ export function ProjectTimeline({
               </div>
 
               {event.description && (
-                <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                <TypoCaption as="p">
                   {event.description}
-                </p>
+                </TypoCaption>
               )}
 
               {event.actor && (

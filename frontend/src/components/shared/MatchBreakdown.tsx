@@ -1,6 +1,7 @@
 import { Card } from "@/components/shared/primitives";
 import { cn } from "@/lib/utils";
 import type { ScoreBreakdown } from "@/matching/types";
+import { TypoCaption } from "@/components/shared/Typography";
 
 const CRITERIA_CONFIG = [
   { key: "skills" as const, label: "Skills", description: "Technical skill alignment" },
@@ -27,7 +28,7 @@ export function MatchBreakdown({ breakdown }: { breakdown: ScoreBreakdown }) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[12px] font-medium text-foreground">{label}</p>
-                <p className="text-[10px] text-muted-foreground">{description}</p>
+                <TypoCaption as="p">{description}</TypoCaption>
               </div>
               <span className="text-[12px] font-bold text-foreground">{breakdown[key]}%</span>
             </div>

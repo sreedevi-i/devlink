@@ -15,6 +15,7 @@ import {
   Bell,
   BarChart3,
   Settings,
+  LayoutTemplate,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/hooks/useSidebar";
@@ -36,6 +37,11 @@ export const SIDEBAR_SECTIONS: SidebarSectionProps[] = [
         label: "Projects",
         to: "/projects",
         icon: <FolderKanban size={16} strokeWidth={2} />,
+      },
+      {
+        label: "Templates",
+        to: "/templates",
+        icon: <LayoutTemplate size={16} strokeWidth={2} />,
       },
       {
         label: "Explore",
@@ -66,6 +72,11 @@ export const SIDEBAR_SECTIONS: SidebarSectionProps[] = [
         label: "AI Matches",
         to: "/builders?tab=matches",
         icon: <Sparkles size={16} strokeWidth={2} />,
+      },
+      {
+        label: "Leaderboard",
+        to: "/leaderboard",
+        icon: <Trophy size={16} strokeWidth={2} />,
       },
       {
         label: "Connections",
@@ -124,6 +135,11 @@ export const SIDEBAR_SECTIONS: SidebarSectionProps[] = [
   {
     label: "Account",
     items: [
+      {
+        label: "Profile Analytics",
+        to: "/profile-analytics",
+        icon: <BarChart3 size={16} strokeWidth={2} />,
+      },
       {
         label: "Settings",
         to: "/settings",

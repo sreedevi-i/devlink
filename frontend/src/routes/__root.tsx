@@ -28,6 +28,7 @@ import { ForbiddenPage } from "@/components/errors/ForbiddenPage";
 import { ServerErrorPage } from "@/components/errors/ServerErrorPage";
 import { OfflinePage } from "@/components/errors/OfflinePage";
 import { NetworkErrorPage } from "@/components/errors/NetworkErrorPage";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 function NotFoundComponent() {
   const ref = useRef<HTMLDivElement>(null);
@@ -58,10 +59,10 @@ function NotFoundComponent() {
           className="mx-auto w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 bg-background [&_svg]:bg-transparent"
         />
 
-        <h1 className="mt-6 text-2xl font-bold text-foreground sm:text-3xl">Page not found</h1>
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+        <TypoHeading as="h1">Page not found</TypoHeading>
+        <TypoCaption as="p">
           The page you're looking for doesn't exist or has been moved to a new address.
-        </p>
+        </TypoCaption>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
             to="/"
@@ -143,12 +144,12 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
+        <TypoHeading as="h1">
           This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        </TypoHeading>
+        <TypoCaption as="p">
           Something went wrong. You can try refreshing or head back home.
-        </p>
+        </TypoCaption>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
@@ -258,15 +259,13 @@ function RootComponent() {
                   walk the sidebar and header on every single navigation. */}
               <SkipLink />
               <OfflineBanner />
-              <Outlet />
+              <AnimatePresence mode="wait" initial={false}>
+                <Outlet key={location.pathname} />
+              </AnimatePresence>
               <Toaster position="top-right" richColors />
             </ThemeProvider>
           </ConfirmProvider>
         </AnnouncerProvider>
-        <AnimatePresence mode="wait" initial={false}>
-          <Outlet key={location.pathname} />
-        </AnimatePresence>
-        <Toaster position="top-right" richColors />
       </I18nProvider>
     </QueryClientProvider>
   );

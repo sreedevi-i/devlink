@@ -11,6 +11,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { TypoSection, TypoCaption } from "@/components/shared/Typography";
 
 export interface FeedbackDialogProps {
   open: boolean;
@@ -92,11 +93,11 @@ export function FeedbackDialog({ open, onOpenChange }: FeedbackDialogProps) {
             <div className="mx-auto w-12 h-12 rounded-full bg-success/10 text-success grid place-items-center">
               <CheckCircle2 className="w-6 h-6" />
             </div>
-            <h3 className="text-base font-bold text-foreground">Thank you for your feedback!</h3>
-            <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+            <TypoSection>Thank you for your feedback!</TypoSection>
+            <TypoCaption as="p">
               Your submission has been logged and sent to our product team. You can track status
               updates in your profile.
-            </p>
+            </TypoCaption>
             <Button onClick={handleClose} className="mt-2">
               Done
             </Button>

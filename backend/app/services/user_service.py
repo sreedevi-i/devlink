@@ -129,6 +129,8 @@ class UserService:
             activity_type=ActivityType.PROFILE_UPDATED,
             title="Updated profile",
             description=f"{db_user.first_name} {db_user.last_name} updated their profile.",
+            target_id=db_user.id,
+            target_type="user",
             icon="user-round-pen",
             color="info",
         )
@@ -368,32 +370,44 @@ class UserService:
         user: User,
     ) -> ProfileCompletionResponse:
         """
-        Calculate profile completion percentage and list missing profile factors.
+        Calculate profile completion percentage based on 8 key criteria and list missing/completed factors.
 
         Factors evaluated:
-        - Avatar: profile_image
-        - Bio: bio
-        - Skills: UserSkill table entries count > 0
-        - Experience: experience_level, role, or company
-        - GitHub: github_url or github_id
-        - Portfolio: portfolio_url or website
-        - Location: location
+        1. Avatar: profile_image
+        2. Banner: cover_image
+        3. Bio: bio
+        4. Skills: UserSkill table entries count > 0 or user skills
+        5. Experience: experience_level, role, or company
+        6. Education: headline or education background
+        7. Social links: github_url, linkedin_url, portfolio_url, or website
+        8. Projects: Owned projects in Project table
         """
         from app.models.user_skill import UserSkill
+        from app.models.project import Project
         from app.schemas.user import ProfileCompletionResponse
 
         missing: list[str] = []
+        completed_factors: list[str] = []
 
         # 1. Avatar
-
-        if not (user.profile_image and user.profile_image.strip()):
+        if user.profile_image and user.profile_image.strip():
+            completed_factors.append("Avatar")
+        else:
             missing.append("Avatar")
-        # 2. Bio
 
-        if not (user.bio and user.bio.strip()):
+        # 2. Banner
+        if user.cover_image and user.cover_image.strip():
+            completed_factors.append("Banner")
+        else:
+            missing.append("Banner")
+
+        # 3. Bio
+        if user.bio and user.bio.strip():
+            completed_factors.append("Bio")
+        else:
             missing.append("Bio")
-        # 3. Skills
 
+        # 4. Skills
         skills_count = (
             db.scalar(
                 select(func.count())
@@ -402,44 +416,78 @@ class UserService:
             )
             or 0
         )
-        if skills_count == 0:
+        if skills_count > 0 or (user.badges and len(user.badges) > 0):
+            completed_factors.append("Skills")
+        else:
             missing.append("Skills")
-        # 4. Experience
 
+        # 5. Experience
         has_exp = bool(
             (user.experience_level and user.experience_level.strip())
             or (user.role and user.role.strip())
             or (user.company and user.company.strip())
         )
-        if not has_exp:
+        if has_exp:
+            completed_factors.append("Experience")
+        else:
             missing.append("Experience")
-        # 5. GitHub
 
-        has_github = bool(
+        # 6. Education
+        has_edu = bool(user.headline and user.headline.strip())
+        if has_edu:
+            completed_factors.append("Education")
+        else:
+            missing.append("Education")
+
+        # 7. Social links
+        has_social = bool(
             (user.github_url and str(user.github_url).strip())
-            or (user.github_id and str(user.github_id).strip())
-        )
-        if not has_github:
-            missing.append("GitHub")
-        # 6. Portfolio
-
-        has_portfolio = bool(
-            (user.portfolio_url and str(user.portfolio_url).strip())
+            or (user.linkedin_url and str(user.linkedin_url).strip())
+            or (user.portfolio_url and str(user.portfolio_url).strip())
             or (user.website and str(user.website).strip())
         )
-        if not has_portfolio:
-            missing.append("Portfolio")
-        # 7. Location
+        if has_social:
+            completed_factors.append("Social links")
+        else:
+            missing.append("Social links")
 
-        if not (user.location and user.location.strip()):
-            missing.append("Location")
-        total_factors = 7
-        completed_factors = total_factors - len(missing)
-        completion_pct = round((completed_factors / total_factors) * 100)
+        # 8. Projects
+        projects_count = (
+            db.scalar(
+                select(func.count())
+                .select_from(Project)
+                .where(Project.owner_id == user.id)
+            )
+            or 0
+        )
+        if projects_count > 0:
+            completed_factors.append("Projects")
+        else:
+            missing.append("Projects")
+
+        total_factors = 8
+        completed_count = len(completed_factors)
+        completion_pct = round((completed_count / total_factors) * 100)
+
+        reward_unlocked = False
+        reward_badge = None
+
+        if completion_pct == 100 or len(missing) == 0:
+            reward_unlocked = True
+            reward_badge = "Profile Master"
+            current_badges = list(user.badges or [])
+            if reward_badge not in current_badges:
+                current_badges.append(reward_badge)
+                user.badges = current_badges
+                db.add(user)
+                db.commit()
 
         return ProfileCompletionResponse(
             completion=completion_pct,
             missing=missing,
+            completed_factors=completed_factors,
+            reward_unlocked=reward_unlocked,
+            reward_badge=reward_badge,
         )
 
     def update_resume_url(

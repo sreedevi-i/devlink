@@ -30,6 +30,8 @@ export interface UserAvatarProps extends React.HTMLAttributes<HTMLSpanElement> {
   status?: OnlineStatus | boolean;
   /** Show a verification checkmark badge. */
   verified?: boolean;
+  /** Show premium golden verified styling. */
+  premium?: boolean;
   /** Override the initials derived from `name`. */
   initials?: string;
   /** Allow clicking avatar to open Crop & Upload Modal. */
@@ -116,6 +118,7 @@ const UserAvatar = React.forwardRef<HTMLSpanElement, UserAvatarProps>(
       size = "md",
       status,
       verified = false,
+      premium = false,
       initials: initialsOverride,
       editable = false,
       onImageUpload,
@@ -201,11 +204,17 @@ const UserAvatar = React.forwardRef<HTMLSpanElement, UserAvatarProps>(
             <span
               aria-label="Verified"
               className={cn(
-                "absolute -right-0.5 -top-0.5 inline-flex items-center justify-center rounded-full bg-background text-primary",
+                "absolute -right-0.5 -top-0.5 inline-flex items-center justify-center rounded-full bg-background",
+                premium ? "text-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.35)]" : "text-primary",
                 s.badge,
               )}
             >
-              <BadgeCheck size={s.badgeIcon} className="fill-primary text-primary-foreground" />
+              <BadgeCheck
+                size={s.badgeIcon}
+                className={cn(
+                  premium ? "fill-amber-500/10 text-amber-500 animate-pulse" : "fill-primary text-primary-foreground"
+                )}
+              />
             </span>
           ) : null}
         </span>

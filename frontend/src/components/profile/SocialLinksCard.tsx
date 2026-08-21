@@ -1,6 +1,7 @@
 import { Card } from "@/components/shared/primitives";
 import { Github, Linkedin, ExternalLink } from "lucide-react";
 import type { ElementType } from "react";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export interface SocialLinksCardProps {
   githubUrl?: string | null;
@@ -51,8 +52,8 @@ export function SocialLinksCard({
             <ExternalLink size={16} />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-foreground">Social links</h2>
-            <p className="text-xs text-muted-foreground">Add links people can use to reach you</p>
+            <TypoHeading as="h2">Social links</TypoHeading>
+            <TypoCaption as="p">Add links people can use to reach you</TypoCaption>
           </div>
         </div>
 
@@ -64,9 +65,9 @@ export function SocialLinksCard({
             { key: "linkedinUrl", label: "LinkedIn", value: formValues?.linkedinUrl ?? "" },
           ].map((field) => (
             <label key={field.key} className="block text-sm">
-              <span className="mb-1 block text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+              <TypoCaption>
                 {field.label}
-              </span>
+              </TypoCaption>
               <input
                 value={field.value}
                 onChange={(event) =>
@@ -95,13 +96,13 @@ export function SocialLinksCard({
           <ExternalLink size={16} />
         </div>
         <div>
-          <h2 className="text-sm font-semibold text-foreground">Social links</h2>
-          <p className="text-xs text-muted-foreground">Find me online</p>
+          <TypoHeading as="h2">Social links</TypoHeading>
+          <TypoCaption as="p">Find me online</TypoCaption>
         </div>
       </div>
 
       {links.length === 0 ? (
-        <p className="mt-4 text-sm text-muted-foreground">No links added yet.</p>
+        <TypoCaption as="p">No links added yet.</TypoCaption>
       ) : (
         <div className="mt-4 flex flex-wrap gap-2">
           {links.map((link) => {

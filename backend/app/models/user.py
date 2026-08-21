@@ -1,39 +1,33 @@
 from __future__ import annotations
 
-
 import uuid
 from datetime import datetime
 from enum import Enum
 
 from sqlalchemy import (
+    JSON,
     Boolean,
     DateTime,
     ForeignKey,
     String,
     Text,
-    JSON,
     func,
 )
 from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from enum import Enum
 from app.database.base import Base
+
 
 class UserRole(str, Enum):
     """Application-level user role."""
+
     USER = "user"
     ADMIN = "admin"
     DEVELOPER = "developer"
     MEMBER = "member"
     VIEWER = "viewer"
     MODERATOR = "moderator"
-
-
-class UserRole(str, Enum):
-    USER = "user"
-    DEVELOPER = "developer"
-    ADMIN = "admin"
 
 
 
@@ -89,6 +83,12 @@ class User(Base):
         nullable=True,
     )
 
+    reputation_score: Mapped[int] = mapped_column(
+        default=0,
+        index=True,
+        nullable=False,
+    )
+
     # ------------------------------------------------------------------
     # Profile
     # ------------------------------------------------------------------
@@ -96,7 +96,20 @@ class User(Base):
     badges: Mapped[list[str]] = mapped_column(
         ARRAY(String).with_variant(JSON, "sqlite"),
         default=list,
-        server_default="[]",
+        # '{}' is the empty-array literal for a Postgres text[]. This said
+        # '[]', which Postgres rejects outright:
+        #
+        #     psycopg.errors.InvalidTextRepresentation:
+        #     malformed array literal: "[]"
+        #
+        # so Base.metadata.create_all() could not build the schema on Postgres
+        # at all. It went unnoticed because the tests create_all against
+        # SQLite, where this column is JSON and '[]' is valid.
+        #
+        # The migration that adds the column (1a2b3c4d5e6f) already uses '{}',
+        # so this aligns the model with the schema that actually exists rather
+        # than changing it.
+        server_default="{}",
         nullable=False,
     )
 
@@ -185,6 +198,21 @@ class User(Base):
         nullable=True,
     )
 
+    experience: Mapped[list | None] = mapped_column(
+        JSON,
+        nullable=True,
+    )
+
+    education: Mapped[list | None] = mapped_column(
+        JSON,
+        nullable=True,
+    )
+
+    certifications: Mapped[list | None] = mapped_column(
+        JSON,
+        nullable=True,
+    )
+
     open_to_work: Mapped[bool] = mapped_column(
         Boolean,
         default=True,
@@ -235,6 +263,13 @@ class User(Base):
     )
 
     is_verified: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        nullable=False,
+        index=True,
+    )
+
+    premium: Mapped[bool] = mapped_column(
         Boolean,
         default=False,
         nullable=False,
@@ -307,6 +342,12 @@ class User(Base):
     # ------------------------------------------------------------------
     # OAuth
     # ------------------------------------------------------------------
+
+    microsoft_id: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+        unique=True,
+    )
 
     github_id: Mapped[str | None] = mapped_column(
         String(100),

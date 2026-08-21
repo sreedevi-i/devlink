@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { Card } from "@/components/shared/primitives";
 import { BriefcaseBusiness, BadgeCheck } from "lucide-react";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export interface ExperienceEntry {
   title?: string | null;
@@ -37,7 +36,9 @@ export function ExperienceCard({
   onFieldChange,
 }: ExperienceCardProps) {
   const fallbackEntries =
-    role || company || experienceLevel ? [{ title: role, company, experienceLevel }] : [];
+    role || company || experienceLevel
+      ? [{ title: role, company, experienceLevel, period: null, description: null }]
+      : [];
   const experienceEntries = (
     entries?.filter((entry) => Boolean(entry.title || entry.company || entry.experienceLevel)) ?? []
   ).length
@@ -53,16 +54,16 @@ export function ExperienceCard({
             <BriefcaseBusiness size={16} />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-foreground">Experience</h2>
-            <p className="text-xs text-muted-foreground">Share your current role and background</p>
+            <TypoHeading as="h2">Experience</TypoHeading>
+            <TypoCaption as="p">Share your current role and background</TypoCaption>
           </div>
         </div>
 
         <div className="mt-4 space-y-4">
           <label className="block text-sm">
-            <span className="mb-1 block text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            <TypoCaption>
               Role
-            </span>
+            </TypoCaption>
             <input
               value={formValues?.role ?? ""}
               onChange={(event) => onFieldChange?.("role", event.target.value)}
@@ -71,9 +72,9 @@ export function ExperienceCard({
             />
           </label>
           <label className="block text-sm">
-            <span className="mb-1 block text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            <TypoCaption>
               Company
-            </span>
+            </TypoCaption>
             <input
               value={formValues?.company ?? ""}
               onChange={(event) => onFieldChange?.("company", event.target.value)}
@@ -82,9 +83,9 @@ export function ExperienceCard({
             />
           </label>
           <label className="block text-sm">
-            <span className="mb-1 block text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            <TypoCaption>
               Experience Level
-            </span>
+            </TypoCaption>
             <input
               value={formValues?.experienceLevel ?? ""}
               onChange={(event) => onFieldChange?.("experienceLevel", event.target.value)}
@@ -107,13 +108,13 @@ export function ExperienceCard({
           <BriefcaseBusiness size={16} />
         </div>
         <div>
-          <h2 className="text-sm font-semibold text-foreground">Experience</h2>
-          <p className="text-xs text-muted-foreground">Current role and background</p>
+          <TypoHeading as="h2">Experience</TypoHeading>
+          <TypoCaption as="p">Current role and background</TypoCaption>
         </div>
       </div>
 
       {experienceEntries.length === 0 ? (
-        <p className="mt-4 text-sm text-muted-foreground">No experience added yet.</p>
+        <TypoCaption as="p">No experience added yet.</TypoCaption>
       ) : (
         <div className="mt-4 space-y-4">
           {experienceEntries.map((entry, index) => (
@@ -123,21 +124,21 @@ export function ExperienceCard({
                 <p className="text-sm font-semibold text-foreground">
                   {entry.title ?? role ?? "Current role"}
                 </p>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <TypoCaption as="p">
                   {entry.company ?? company ?? "Independent"}
-                </p>
+                </TypoCaption>
                 {entry.experienceLevel || experienceLevel ? (
                   <div className="mt-2 inline-flex items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground">
                     <BadgeCheck size={12} /> {entry.experienceLevel ?? experienceLevel}
                   </div>
                 ) : null}
                 {entry.period ? (
-                  <p className="mt-2 text-xs text-muted-foreground">{entry.period}</p>
+                  <TypoCaption as="p">{entry.period}</TypoCaption>
                 ) : null}
                 {entry.description ? (
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  <TypoCaption as="p">
                     {entry.description}
-                  </p>
+                  </TypoCaption>
                 ) : null}
               </div>
             </div>

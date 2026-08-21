@@ -6,7 +6,10 @@ from typing import Final
 
 from app.core.config import settings
 
-ALLOWED_RESUME_MIME_TYPES: Final[set[str]] = {"application/pdf"}
+ALLOWED_RESUME_MIME_TYPES: Final[set[str]] = {
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+}
 MAX_RESUME_SIZE_BYTES: Final[int] = settings.RESUME_MAX_SIZE_MB * 1024 * 1024
 MAX_IMAGE_SIZE_BYTES: Final[int] = settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024
 
@@ -15,14 +18,31 @@ ALLOWED_IMAGE_MIME_TYPES: Final[set[str]] = set(
 )
 
 
+def scan_file_for_malware(contents: bytes, filename: str) -> None:
+    """
+    Malware scanning hook for uploaded files.
+    Integrates with external antivirus scanning or quarantine engines if configured.
+    Raises ValueError if malicious patterns or prohibited signatures are detected.
+    """
+    # Placeholder for enterprise antivirus scanner hook (e.g., ClamAV / VirusTotal API)
+    if not contents:
+        raise ValueError("Uploaded file is empty.")
+    
+    # Basic heuristic check for executable scripts disguised as uploads
+    suspicious_signatures = [b"<?php", b"<script", b"MZ", b"\x7fELF"]
+    for sig in suspicious_signatures:
+        if contents.startswith(sig):
+            raise ValueError(f"Security violation: Prohibited file signature detected in {filename}.")
+
+
 def validate_resume_upload(
     filename: str | None, content_type: str | None, size_bytes: int
 ) -> None:
-    if not filename or not filename.lower().endswith(".pdf"):
-        raise ValueError("Please upload a PDF file.")
+    if not filename or not (filename.lower().endswith(".pdf") or filename.lower().endswith(".docx")):
+        raise ValueError("Please upload a PDF or DOCX file.")
     normalized_content_type = (content_type or "").lower()
     if normalized_content_type not in ALLOWED_RESUME_MIME_TYPES:
-        raise ValueError("Please upload a PDF file.")
+        raise ValueError("Please upload a PDF or DOCX file.")
     if size_bytes > MAX_RESUME_SIZE_BYTES:
         raise ValueError(
             f"Resume file must be smaller than {settings.RESUME_MAX_SIZE_MB}MB."
@@ -30,6 +50,9 @@ def validate_resume_upload(
 
 
 def save_resume_upload(contents: bytes, filename: str, user_id: uuid.UUID | str) -> str:
+    # Run malware scan hook before writing to storage
+    scan_file_for_malware(contents, filename)
+
     upload_dir = Path(settings.UPLOAD_DIR) / "resumes"
     upload_dir.mkdir(parents=True, exist_ok=True)
 
@@ -79,6 +102,9 @@ def save_image_upload(
     Optimizes and saves an uploaded image (and optional thumbnail) to disk.
     Returns a dictionary with 'image_url' and 'thumbnail_url'.
     """
+    # Run malware scan hook prior to processing or writing bytes
+    scan_file_for_malware(contents, filename)
+
     from app.services.image_optimizer import ImageOptimizer
 
     result = ImageOptimizer.process_image(

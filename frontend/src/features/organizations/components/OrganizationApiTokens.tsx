@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { api } from "../../../api";
 import { Key, Plus, Trash2, Copy, Check, ShieldAlert, Loader2 } from "lucide-react";
 import { useConfirm } from "@/components/confirm/ConfirmProvider";
+import { TypoSection, TypoCard, TypoHeading } from "@/components/shared/Typography";
 
 interface Token {
   id: string;
@@ -151,7 +152,7 @@ export const OrganizationApiTokens: React.FC<OrganizationApiTokensProps> = ({ or
       {/* Header bar */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-semibold text-white">Workspace API Tokens</h2>
+          <TypoHeading as="h2">Workspace API Tokens</TypoHeading>
           <p className="text-sm text-gray-400">
             Generate secure tokens to access the DevLink API for automation and CI/CD pipelines.
           </p>
@@ -179,7 +180,7 @@ export const OrganizationApiTokens: React.FC<OrganizationApiTokensProps> = ({ or
         <div className="p-6 rounded-xl border border-yellow-500/20 bg-yellow-500/5 space-y-4">
           <div className="flex items-center gap-2 text-yellow-400 font-semibold text-base">
             <ShieldAlert size={20} className="text-yellow-400" />
-            <h3>Copy your API token now</h3>
+            <TypoSection>Copy your API token now</TypoSection>
           </div>
           <p className="text-sm text-gray-300">
             For security reasons, we only show this token once. If you lose it, you will have to
@@ -212,7 +213,7 @@ export const OrganizationApiTokens: React.FC<OrganizationApiTokensProps> = ({ or
           onSubmit={handleCreateToken}
           className="p-6 rounded-xl border border-gray-800 bg-gray-900/20 space-y-6"
         >
-          <h3 className="text-base font-semibold text-white">Generate a new API token</h3>
+          <TypoSection>Generate a new API token</TypoSection>
 
           <div className="space-y-4">
             <div>
@@ -311,7 +312,7 @@ export const OrganizationApiTokens: React.FC<OrganizationApiTokensProps> = ({ or
         <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-dashed border-gray-800 bg-gray-900/10 text-gray-400 text-center space-y-3">
           <Key size={36} className="text-gray-600" />
           <div>
-            <h4 className="text-sm font-semibold text-white">No API Tokens generated</h4>
+            <TypoCard>No API Tokens generated</TypoCard>
             <p className="text-xs text-gray-400 mt-1">
               Create an API token to allow external tools to authenticate with this workspace.
             </p>

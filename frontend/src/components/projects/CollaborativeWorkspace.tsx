@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { currentUser } from "@/mocks/seed";
+import { TypoSection, TypoCaption } from "@/components/shared/Typography";
 
 interface CollaborativeWorkspaceProps {
   projectId: string;
@@ -52,10 +53,10 @@ export function CollaborativeWorkspace({ projectId }: CollaborativeWorkspaceProp
       <Card className="p-4 lg:col-span-1 flex flex-col justify-between">
         <div>
           <div className="flex items-center justify-between border-b border-border pb-3 mb-3">
-            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+            <TypoSection>
               <FileText size={16} className="text-primary" />
               Workspace Docs
-            </h3>
+            </TypoSection>
             <button
               onClick={() => setShowNewDocInput(true)}
               className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary hover:bg-primary/20 transition-colors"
@@ -94,7 +95,7 @@ export function CollaborativeWorkspace({ projectId }: CollaborativeWorkspaceProp
 
           <div className="space-y-1">
             {documents.length === 0 ? (
-              <p className="text-xs text-muted-foreground py-4 text-center">No documents yet.</p>
+              <TypoCaption as="p">No documents yet.</TypoCaption>
             ) : (
               documents.map((doc) => (
                 <button
@@ -108,9 +109,9 @@ export function CollaborativeWorkspace({ projectId }: CollaborativeWorkspaceProp
                   )}
                 >
                   <span className="truncate pr-2">{doc.title}</span>
-                  <span className="shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                  <TypoCaption>
                     v{doc.version}
-                  </span>
+                  </TypoCaption>
                 </button>
               ))
             )}
@@ -172,7 +173,7 @@ export function CollaborativeWorkspace({ projectId }: CollaborativeWorkspaceProp
                 </div>
 
                 {/* Save Status Badge */}
-                <span className="inline-flex items-center gap-1 rounded-full bg-muted/50 px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+                <TypoCaption>
                   {isSaving ? (
                     <>
                       <RefreshCw size={12} className="animate-spin text-primary" /> Saving...
@@ -183,7 +184,7 @@ export function CollaborativeWorkspace({ projectId }: CollaborativeWorkspaceProp
                       {activeDoc.version}
                     </>
                   )}
-                </span>
+                </TypoCaption>
               </div>
             </div>
 
@@ -225,9 +226,9 @@ export function CollaborativeWorkspace({ projectId }: CollaborativeWorkspaceProp
             <div>
               <Sparkles size={32} className="mx-auto text-muted-foreground opacity-50 mb-2" />
               <p className="text-sm font-medium text-foreground">Select or create a document</p>
-              <p className="text-xs text-muted-foreground mt-1">
+              <TypoCaption as="p">
                 Collaborate with your team members in real time.
-              </p>
+              </TypoCaption>
             </div>
           </div>
         )}

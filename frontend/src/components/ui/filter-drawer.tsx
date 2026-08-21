@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use client";
 
 import * as React from "react";
@@ -19,6 +18,7 @@ import {
   DrawerDescription,
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { TypoCard } from "@/components/shared/Typography";
 
 export interface FilterOption {
   label: string;
@@ -174,7 +174,6 @@ export function FilterDrawer({
           <input
             type="text"
             value={asText(draftValues[section.id])}
-            value={(draftValues[section.id] as string) || ""}
             onChange={(e) => handleTextChange(section.id, e.target.value)}
             placeholder={section.placeholder || `Search ${section.title.toLowerCase()}...`}
             className="w-full rounded-md border border-border bg-surface py-1.5 pl-8 pr-3 text-[13px] text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary"
@@ -188,7 +187,6 @@ export function FilterDrawer({
       return (
         <select
           value={asText(draftValues[section.id])}
-          value={(draftValues[section.id] as string) || ""}
           onChange={(e) => handleTextChange(section.id, e.target.value)}
           className="mt-2 w-full rounded-md border border-border bg-surface px-3 py-1.5 text-[13px] text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary"
           aria-label={section.title}
@@ -206,24 +204,23 @@ export function FilterDrawer({
     if (type === "range") {
       const min = section.min ?? 0;
       const max = section.max ?? 100;
-      const step = section.step ?? 1;
+      const stepValue = section.step ?? 1;
       const val = asNumber(draftValues[section.id], min);
-      const val = (draftValues[section.id] as number) ?? min;
 
       return (
         <div className="mt-2 space-y-2">
           <div className="flex items-center justify-between text-[12px] text-muted-foreground">
             <span>{min}</span>
-            <span className="font-semibold text-foreground">{val}</span>
+            <span className="font-semibold text-foreground">{val as any}</span>
             <span>{max}</span>
           </div>
           <input
             type="range"
             min={min}
             max={max}
-            step={step}
-            value={val}
-            onChange={(e) => handleTextChange(section.id, Number(e.target.value))}
+            step={stepValue}
+            value={val as any}
+            onChange={(e) => handleTextChange(section.id, e.target.value as any)}
             className="w-full cursor-pointer accent-primary"
             aria-label={section.title}
           />
@@ -276,9 +273,9 @@ export function FilterDrawer({
           key={section.id}
           className="space-y-1.5 border-b border-border/50 pb-4 last:border-b-0 last:pb-0"
         >
-          <h4 className="text-[13px] font-semibold text-foreground uppercase tracking-wider">
+          <TypoCard>
             {section.title}
-          </h4>
+          </TypoCard>
           {renderSectionContent(section)}
         </div>
       ))}

@@ -25,6 +25,7 @@
 - [Screenshots](#screenshots)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
+- [Architecture Overview](#architecture-overview)
 - [Getting Started](#getting-started)
 - [Troubleshooting Guide](#troubleshooting-guide)
 - [Environment Variables](#environment-variables)
@@ -151,6 +152,37 @@ M
 | Docker & Docker Compose | Containerization and local environment |
 | DevContainers           | VS Code and GitHub Codespaces support  |
 | GitHub Actions          | CI/CD pipelines                        |
+
+---
+
+## Architecture Overview
+
+DevLink follows a client-server architecture where the React frontend communicates with the FastAPI backend through REST APIs and WebSockets. The backend stores persistent data in PostgreSQL while Redis is used for caching and Pub/Sub to support real-time communication.
+
+```mermaid
+flowchart LR
+    User[User]
+    Frontend[React Frontend]
+    Backend[FastAPI Backend]
+    DB[(PostgreSQL)]
+    Redis[(Redis)]
+    WS[WebSocket]
+
+    User --> Frontend
+    Frontend -->|REST API| Backend
+    Backend --> DB
+    Backend --> Redis
+    Backend <-->|WebSocket| WS
+    WS --> Frontend
+```
+
+### Request Flow
+
+1. Users interact with the React frontend.
+2. The frontend sends HTTP requests to the FastAPI backend.
+3. FastAPI processes business logic and reads/writes data in PostgreSQL.
+4. Redis provides caching and Pub/Sub for faster responses and real-time events.
+5. WebSockets deliver live notifications, messaging, and activity updates back to connected clients.
 
 ---
 

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cn } from "../../lib/utils";
 import { Ghost } from "lucide-react";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
   icon?: React.ReactNode;
@@ -29,11 +30,11 @@ export function EmptyState({
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
           {icon || <Ghost className="h-10 w-10 text-muted-foreground" />}
         </div>
-        <h2 className="mt-6 text-xl font-semibold">{title}</h2>
+        <TypoHeading as="h2">{title}</TypoHeading>
         {description && (
-          <p className="mb-8 mt-2 text-center text-sm font-normal leading-6 text-muted-foreground">
+          <TypoCaption as="p">
             {description}
-          </p>
+          </TypoCaption>
         )}
         {action}
       </div>

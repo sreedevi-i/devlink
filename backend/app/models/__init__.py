@@ -27,11 +27,13 @@ from .organization_member import OrganizationMember, OrgMemberRole  # noqa: F401
 from .password_reset_token import PasswordResetToken  # noqa: F401
 from .project import Project  # noqa: F401
 from .project_document import ProjectDocument  # noqa: F401
+from .project_template import ProjectTemplate, ProjectTemplateFavorite  # noqa: F401
 from .project_view import ProjectView  # noqa: F401
 from .project_member import ProjectMember  # noqa: F401
 from .project_version import ProjectVersion  # noqa: F401
 from .project_skill import ProjectSkill  # noqa: F401
 from .refresh_token import RefreshToken  # noqa: F401
+from .reputation import ReputationLog  # noqa: F401
 from .repository import Repository  # noqa: F401
 from .skill import Skill  # noqa: F401
 from .user import User  # noqa: F401
@@ -70,6 +72,7 @@ from .user_skill import UserSkill as UserSkill
 from .workspace_api_token import WorkspaceApiToken as WorkspaceApiToken
 from .milestone import Milestone as Milestone
 from .announcement import Announcement as Announcement
+from .message_draft import MessageDraft  # noqa: F401
 from .user_report import UserReport
 from .user_skill import UserSkill
 from .verification_request import VerificationRequest  # noqa: F401
@@ -82,6 +85,17 @@ from .security_event import SecurityEvent, SecurityEventType, SecurityEventSever
 from .profile_suggestion import ProfileSuggestionDismissal
 from .request_log import RequestLog  # noqa: F401
 from .background_job import BackgroundJob, JobStatus
+from .testimonial import (  # noqa: F401
+    Testimonial,
+    TestimonialRelationship,
+    TestimonialStatus,
+)
 from .badge import Badge, UserBadge  # noqa: F401
+from .project_release import ProjectRelease, ReleaseStatus, ReleaseType  # noqa: F401
 from .centralized_analytics import CentralizedAnalyticsEvent, AnalyticsEventType  # noqa: F401
+from .global_announcement import GlobalAnnouncement, AnnouncementSeverity, TargetAudience  # noqa: F401
+from .post import Post  # noqa: F401
+from .pinned_project import PinnedProject  # noqa: F401
 
+from .project_comment import ProjectComment  # noqa: F401
+from .project_time_log import ProjectTimeLog  # noqa: F401

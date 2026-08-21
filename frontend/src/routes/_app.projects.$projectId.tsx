@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { projectsService } from "@/services";
 import { Card, TagChip, Avatar, Skeleton } from "@/components/shared/primitives";
@@ -33,22 +33,55 @@ import { addRecentlyViewedProject } from "@/lib/recentlyViewedProjects";
 import { usePermissions } from "@/hooks/usePermissions";
 import { ProjectTimeline } from "@/components/project/ProjectTimeline";
 import { ProjectInsightsCard } from "@/components/projects/ProjectInsightsCard";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
+import { getMyApplications } from "@/lib/api";
+import { useWithdrawApplication } from "@/hooks/useApplications";
+import { ApplyModal } from "@/features/projects/components/ApplyModal";
 
 export const Route = createFileRoute("/_app/projects/$projectId")({
-  head: ({ params }) => ({
-    meta: [
-      { title: `${params.projectId} — DevLink` },
-      { name: "description", content: "Project details, members, activity and repositories." },
-    ],
-  }),
+  loader: async ({ params }) => {
+    try {
+      const project = await projectsService.get(params.projectId);
+      if (!project) throw notFound();
+      return { project };
+    } catch (e) {
+      throw notFound();
+    }
+  },
+  head: ({ loaderData, params }) => {
+    const p = loaderData?.project;
+    return {
+      meta: [
+        { title: `${p ? p.name : params.projectId} — DevLink` },
+        {
+          name: "description",
+          content: p?.description || "Project details, members, activity and repositories.",
+        },
+        { property: "og:title", content: `${p ? p.name : params.projectId} | DevLink Project` },
+        {
+          property: "og:description",
+          content: p?.description || "Check out this project on DevLink.",
+        },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: `${p ? p.name : params.projectId} | DevLink Project` },
+        {
+          name: "twitter:description",
+          content: p?.description || "Check out this project on DevLink.",
+        },
+      ],
+    };
+  },
   component: ProjectDetail,
 });
 
 function ProjectDetail() {
   const { projectId } = Route.useParams();
+  const loaderData = Route.useLoaderData();
   const { data: p, isLoading } = useQuery({
     queryKey: ["project", projectId],
     queryFn: () => projectsService.get(projectId),
+    initialData: loaderData?.project,
   });
   const [tab, setTab] = useState<
     "overview" | "workspace" | "members" | "activity" | "repos" | "dashboard"
@@ -70,6 +103,14 @@ function ProjectDetail() {
     (m) => m.user_id === currentUser.id || m.username === currentUser.name,
   );
   const currentUserRole = isOwner ? "owner" : memberObj?.role || "";
+
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+  const { data: myApps } = useQuery({
+    queryKey: ["myApplications"],
+    queryFn: getMyApplications,
+  });
+  const projectApplication = myApps?.find(a => a.project_id === projectId);
+  const withdrawMutation = useWithdrawApplication();
 
   // Tag generator state
   const [showTagGenerator, setShowTagGenerator] = useState(false);
@@ -115,8 +156,75 @@ function ProjectDetail() {
     window.setTimeout(() => setCopied(false), 2000);
   };
 
-  if (isLoading) return <Card className="h-96 animate-pulse" />;
-  if (!p) throw notFound();
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <BackButton to="/projects" label="Back to projects" />
+        
+        {/* Header Card Skeleton */}
+        <Card className="p-5">
+          <div className="flex items-start gap-4">
+            <Skeleton className="h-14 w-14 shrink-0 rounded-md animate-pulse" />
+            <div className="min-w-0 flex-1 space-y-2">
+              <Skeleton className="h-6 w-1/3 animate-pulse" />
+              <Skeleton className="h-4 w-2/3 animate-pulse" />
+              <div className="mt-3 flex gap-1.5">
+                <Skeleton className="h-5 w-16 rounded-full animate-pulse" />
+                <Skeleton className="h-5 w-20 rounded-full animate-pulse" />
+                <Skeleton className="h-5 w-14 rounded-full animate-pulse" />
+              </div>
+            </div>
+            <div className="flex shrink-0 items-center gap-3">
+              <Skeleton className="h-8 w-24 rounded-md animate-pulse" />
+              <Skeleton className="h-8 w-8 rounded-md animate-pulse" />
+              <Skeleton className="h-8 w-8 rounded-md animate-pulse" />
+              <div className="hidden gap-4 sm:flex">
+                <Skeleton className="h-4 w-10 animate-pulse" />
+                <Skeleton className="h-4 w-10 animate-pulse" />
+                <Skeleton className="h-4 w-10 animate-pulse" />
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Tabs Row Skeleton */}
+        <div className="flex items-center gap-1 border-b border-border pb-px">
+          <Skeleton className="h-8 w-20 rounded-t-md animate-pulse" />
+          <Skeleton className="h-8 w-24 rounded-t-md animate-pulse" />
+          <Skeleton className="h-8 w-20 rounded-t-md animate-pulse" />
+          <Skeleton className="h-8 w-20 rounded-t-md animate-pulse" />
+          <Skeleton className="h-8 w-16 rounded-t-md animate-pulse" />
+        </div>
+
+        {/* Tab Content Area Skeleton */}
+        <div className="grid gap-6 lg:grid-cols-12">
+          <div className="lg:col-span-8 space-y-4">
+            <Card className="p-5 space-y-3">
+              <Skeleton className="h-5 w-32 animate-pulse" />
+              <Skeleton className="h-4 w-full animate-pulse" />
+              <Skeleton className="h-4 w-full animate-pulse" />
+              <Skeleton className="h-4 w-3/4 animate-pulse" />
+            </Card>
+          </div>
+          <div className="lg:col-span-4 space-y-4">
+            <Card className="p-5 space-y-3">
+              <Skeleton className="h-5 w-28 animate-pulse" />
+              <Skeleton className="h-10 w-full animate-pulse" />
+              <Skeleton className="h-10 w-full animate-pulse" />
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  if (!p) {
+    // When a child sub-route (e.g. collaboration-metrics) is active and the
+    // project data is unavailable (backend offline / not found), render the
+    // child outlet so sub-pages can display their own standalone content
+    // instead of crashing the whole route tree.
+    return <Outlet />;  
+  }
+
 
   const tabs = dashboard
     ? (["overview", "workspace", "members", "activity", "repos", "dashboard"] as const)
@@ -131,8 +239,8 @@ function ProjectDetail() {
             {p.icon}
           </span>
           <div className="min-w-0 flex-1">
-            <h1 className="text-[22px] font-bold text-foreground">{p.name}</h1>
-            <p className="mt-1 text-[13px] text-muted-foreground">{p.description}</p>
+            <TypoHeading as="h1">{p.name}</TypoHeading>
+            <TypoCaption as="p">{p.description}</TypoCaption>
             <div className="mt-3 flex flex-wrap gap-1">
               {p.stack.map((s) => (
                 <TagChip key={s}>{s}</TagChip>
@@ -151,6 +259,30 @@ function ProjectDetail() {
                 {copied ? "Copied!" : "Copy invite link"}
               </button>
             )}
+
+            {!isOwner && projectApplication ? (
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center rounded-md border border-border bg-surface px-3 py-2 text-[12px] font-medium text-primary">
+                  Status: {projectApplication.status}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => withdrawMutation.mutate(projectApplication.id)}
+                  disabled={withdrawMutation.isPending}
+                  className="inline-flex items-center rounded-md border border-destructive/20 bg-destructive/10 px-3 py-2 text-[12px] font-medium text-destructive transition-colors hover:bg-destructive/20 disabled:opacity-50"
+                >
+                  Withdraw
+                </button>
+              </div>
+            ) : !isOwner ? (
+              <button
+                type="button"
+                onClick={() => setIsApplyModalOpen(true)}
+                className="inline-flex items-center rounded-md bg-primary px-3 py-2 text-[12px] font-medium text-primary-foreground transition-colors hover:opacity-90"
+              >
+                Apply
+              </button>
+            ) : null}
 
             <ShareProjectButton projectTitle={p.name} projectDescription={p.description} />
 
@@ -207,13 +339,13 @@ function ProjectDetail() {
             <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
               <div className="h-full bg-primary" style={{ width: `${p.progress}%` }} />
             </div>
-            <p className="mt-1 text-[11px] text-muted-foreground">{p.progress}% complete</p>
+            <TypoCaption as="p">{p.progress}% complete</TypoCaption>
           </Card>
           <Card className="p-4">
             <p className="text-[13px] font-semibold text-foreground">Owner</p>
-            <p className="mt-2 text-[13px] text-muted-foreground">{p.owner}</p>
+            <TypoCaption as="p">{p.owner}</TypoCaption>
             <p className="mt-4 text-[13px] font-semibold text-foreground">Status</p>
-            <p className="mt-1 text-[13px] capitalize text-muted-foreground">{p.status}</p>
+            <TypoCaption as="p">{p.status}</TypoCaption>
 
             {/* AI Tag Generator Section */}
             <div className="mt-4 border-t border-border pt-4">
@@ -267,9 +399,9 @@ function ProjectDetail() {
                         ))}
                       </div>
                       <div className="flex items-center justify-between">
-                        <p className="text-[10px] text-muted-foreground">
+                        <TypoCaption as="p">
                           {selectedTags.length} tags selected
-                        </p>
+                        </TypoCaption>
                         <div className="flex items-center gap-1">
                           <button
                             onClick={() => tagMutation.mutate()}
@@ -306,7 +438,7 @@ function ProjectDetail() {
             />
           </Card>
 
-          <ProjectTimeline className="mt-6" />
+          <ProjectTimeline className="mt-6 lg:col-span-3" />
         </div>
       )}
       {tab === "members" && (
@@ -326,7 +458,7 @@ function ProjectDetail() {
                 key={a.id}
                 className="flex items-center gap-3 px-4 py-2.5 text-[13px] text-foreground"
               >
-                {a.text} <span className="ml-auto text-[11px] text-muted-foreground">{a.ago}</span>
+                {a.text} <TypoCaption>{a.ago}</TypoCaption>
               </li>
             ))}
           </ul>
@@ -339,7 +471,7 @@ function ProjectDetail() {
             <span className="text-[13px] font-medium text-foreground">
               devlink/{p.name.toLowerCase().replace(/\s+/g, "-")}
             </span>
-            <span className="ml-auto text-[11px] text-muted-foreground">main · updated 2h ago</span>
+            <TypoCaption>main · updated 2h ago</TypoCaption>
           </div>
         </Card>
       )}
@@ -347,6 +479,12 @@ function ProjectDetail() {
       {tab === "dashboard" && (
         <ProjectDashboard projectId={projectId} currentUserRole={currentUserRole} />
       )}
+
+      <ApplyModal
+        isOpen={isApplyModalOpen}
+        onClose={() => setIsApplyModalOpen(false)}
+        projectId={projectId}
+      />
     </div>
   );
 }

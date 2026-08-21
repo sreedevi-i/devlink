@@ -20,6 +20,7 @@ import {
 import { BackButton } from "@/components/shared/BackButton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { projects as allProjects, activity } from "@/mocks/seed";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 type Tab = "overview" | "projects" | "skills" | "activity";
 
@@ -53,7 +54,7 @@ function BuilderProfile() {
   const relatedProjectId = builderProjects[0]?.id ?? allProjects[0]?.id ?? "";
   const { data: match } = useTeamMatch(builderId, relatedProjectId);
 
-  if (isLoading) return <Card className="h-96 animate-pulse" />;
+
 
   const handleTabChange = (value: string) => {
     setTab(value as Tab);
@@ -111,10 +112,10 @@ function BuilderProfile() {
         <div className="flex flex-wrap items-start gap-5">
           <Avatar src={b.avatar} alt={b.name} size={96} online={b.online} />
           <div className="min-w-0 flex-1">
-            <h1 className="text-[22px] font-bold text-foreground">{b.name}</h1>
-            <p className="text-[13px] text-muted-foreground">
+            <TypoHeading as="h1">{b.name}</TypoHeading>
+            <TypoCaption as="p">
               @{b.handle} · {b.role}
-            </p>
+            </TypoCaption>
             <p className="mt-2 text-[13px] text-foreground">{b.bio}</p>
             <div className="mt-3 flex flex-wrap gap-1">
               {b.skills.map((s) => (
@@ -145,7 +146,7 @@ function BuilderProfile() {
         <Card className="p-4">
           <p className="text-[13px] font-semibold text-foreground">Experience</p>
           <p className="mt-2 text-[36px] font-bold text-foreground">
-            {b.yearsExp} <span className="text-[14px] font-medium text-muted-foreground">yrs</span>
+            {b.yearsExp} <TypoCaption>yrs</TypoCaption>
           </p>
         </Card>
         <Card className="p-4">
@@ -176,7 +177,7 @@ function BuilderProfile() {
               <p className="text-[13px] font-semibold text-foreground">Experience</p>
               <p className="mt-2 text-[36px] font-bold text-foreground">
                 {b.yearsExp}{" "}
-                <span className="text-[14px] font-medium text-muted-foreground">yrs</span>
+                <TypoCaption>yrs</TypoCaption>
               </p>
             </Card>
             <Card className="p-4">
@@ -191,7 +192,7 @@ function BuilderProfile() {
           )}
           <Card className="p-4 mt-4">
             <p className="text-[13px] font-semibold text-foreground">About</p>
-            <p className="mt-2 text-[13px] text-muted-foreground">{b.bio}</p>
+            <TypoCaption as="p">{b.bio}</TypoCaption>
           </Card>
         </TabsContent>
 
@@ -217,9 +218,9 @@ function BuilderProfile() {
                         <p className="truncate text-[14px] font-semibold text-foreground">
                           {p.name}
                         </p>
-                        <p className="mt-0.5 line-clamp-2 text-[12px] text-muted-foreground">
+                        <TypoCaption as="p">
                           {p.description}
-                        </p>
+                        </TypoCaption>
                       </div>
                     </div>
                     <div className="mt-3 flex flex-wrap gap-1">
@@ -288,9 +289,9 @@ function BuilderProfile() {
                     {a.highlight && (
                       <span className="ml-1 font-medium text-primary">{a.highlight}</span>
                     )}
-                    <span className="ml-auto shrink-0 text-[11px] text-muted-foreground">
+                    <TypoCaption>
                       {a.ago}
-                    </span>
+                    </TypoCaption>
                   </li>
                 ))}
               </ul>

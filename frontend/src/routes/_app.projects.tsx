@@ -1,9 +1,8 @@
-// @ts-nocheck
 import { createFileRoute, Outlet, useRouterState, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { projectsService } from "@/services";
-import { Card, TagChip, SectionHeader } from "@/components/shared/primitives";
+import { Card, TagChip, SectionHeader, Skeleton } from "@/components/shared/primitives";
 import {
   Pagination,
   PaginationContent,
@@ -22,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { getRecentlyViewedProjectIds } from "@/lib/recentlyViewedProjects";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { FilterDrawer, FilterSection, type FilterValue } from "@/components/ui/filter-drawer";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export const projectSearchSchema = z.object({
   page: z.number().catch(1).optional(),
@@ -41,6 +41,7 @@ export const projectSearchSchema = z.object({
   remote: z.boolean().optional(),
   paid: z.boolean().optional(),
   opensource: z.boolean().optional(),
+  create: z.boolean().optional(),
 });
 
 /**
@@ -99,10 +100,26 @@ function ProjectsPage() {
   >("all");
   const [showFilters, setShowFilters] = useState(false);
   const [recentProjectIds, setRecentProjectIds] = useState<string[]>([]);
+  const search = Route.useSearch();
 
   useEffect(() => {
     setRecentProjectIds(getRecentlyViewedProjectIds());
   }, []);
+
+  useEffect(() => {
+    if (search.create) {
+      setCreateOpen(true);
+      // Remove query param to keep the URL clean
+      navigate({
+        search: (prev) => {
+          const next = { ...prev };
+          delete next.create;
+          return next;
+        },
+        replace: true,
+      });
+    }
+  }, [search.create]);
 
   const { data = [], isLoading } = useQuery({
     queryKey: [
@@ -162,10 +179,10 @@ function ProjectsPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[22px] font-bold tracking-tight text-foreground">Projects</h1>
-          <p className="text-[13px] text-muted-foreground">
+          <TypoHeading as="h1">Projects</TypoHeading>
+          <TypoCaption as="p">
             Everything you're building, in one place.
-          </p>
+          </TypoCaption>
         </div>
         <button
           onClick={() => setCreateOpen(true)}
@@ -178,8 +195,8 @@ function ProjectsPage() {
       {recentlyViewed.length > 0 && (
         <section className="space-y-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-[15px] font-semibold text-foreground">Recently Viewed Projects</h2>
-            <span className="text-[11px] text-muted-foreground">Your latest project visits</span>
+            <TypoHeading as="h2">Recently Viewed Projects</TypoHeading>
+            <TypoCaption>Your latest project visits</TypoCaption>
           </div>
 
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -195,9 +212,9 @@ function ProjectsPage() {
                       <p className="truncate text-[14px] font-semibold text-foreground">
                         {project.name}
                       </p>
-                      <p className="mt-0.5 line-clamp-2 text-[12px] text-muted-foreground">
+                      <TypoCaption as="p">
                         {project.description}
-                      </p>
+                      </TypoCaption>
                     </div>
                   </div>
 
@@ -339,17 +356,6 @@ function ProjectsPage() {
             opensource: booleanToChoice(filters.opensource),
           }}
           onApply={(newValues) => {
-            setFilters({
-              language: toStringList(newValues.language),
-              experience: toStringList(newValues.experience),
-              remote: choiceToBoolean(newValues.remote),
-              paid: choiceToBoolean(newValues.paid),
-              opensource: choiceToBoolean(newValues.opensource),
-            remote: filters.remote === undefined ? "" : String(filters.remote),
-            paid: filters.paid === undefined ? "" : String(filters.paid),
-            opensource: filters.opensource === undefined ? "" : String(filters.opensource),
-          }}
-          onApply={(newValues) => {
             const boolOrUndefined = (v: unknown): boolean | undefined =>
               v === "" || v === undefined ? undefined : v === "true";
             const stringOrUndefined = (v: unknown): string | undefined =>
@@ -368,32 +374,6 @@ function ProjectsPage() {
               opensource: boolOrUndefined(newValues.opensource),
             });
           }}
-          initialFilters={{
-            language: filters.language ? filters.language : [],
-            experience: filters.experience,
-            remote: filters.remote ? "true" : "false",
-            paid: filters.paid ? "true" : "false",
-            opensource: filters.opensource ? "true" : "false",
-          }}
-
-          onApply={(newValues) => {
-            // const selectedLangs = Array.isArray(newValues.language)
-            // ? newValues.language.join(",")
-            // : newValues.language;
-            setFilters({
-              ...filters,
-              language: Array.isArray(newValues.language)
-                ? newValues.language
-                : newValues.language
-                  ? [newValues.language]
-                  : undefined,
-              experience: newValues.experience || "",
-              remote: newValues.remote || "",
-              paid: newValues.paid || "",
-              openSource: newValues.opensource || "",
-              techStack: techStack || "",
-            });
-          }}
           onReset={clearFilters}
         />
       </Card>
@@ -401,7 +381,39 @@ function ProjectsPage() {
       {isLoading ? (
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i} className="h-40 animate-pulse" />
+            <Card key={i} className="p-4 flex flex-col justify-between h-[190px]">
+              <div>
+                <div className="flex items-start gap-3">
+                  <Skeleton className="h-10 w-10 shrink-0 rounded-md animate-pulse" />
+                  <div className="min-w-0 flex-1 space-y-1.5 pt-0.5">
+                    <Skeleton className="h-4 w-2/3 animate-pulse" />
+                    <Skeleton className="h-3 w-5/6 animate-pulse" />
+                  </div>
+                </div>
+                <div className="mt-3 flex gap-1">
+                  <Skeleton className="h-5 w-14 rounded-full animate-pulse" />
+                  <Skeleton className="h-5 w-16 rounded-full animate-pulse" />
+                  <Skeleton className="h-5 w-12 rounded-full animate-pulse" />
+                </div>
+              </div>
+              <div>
+                <div className="mt-2 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <Skeleton className="h-3 w-10 animate-pulse" />
+                    <Skeleton className="h-3 w-8 animate-pulse" />
+                  </div>
+                  <Skeleton className="h-1 w-full rounded-full animate-pulse" />
+                </div>
+                <div className="mt-3 flex items-center justify-between">
+                  <div className="flex gap-4">
+                    <Skeleton className="h-3.5 w-6 animate-pulse" />
+                    <Skeleton className="h-3.5 w-6 animate-pulse" />
+                    <Skeleton className="h-3.5 w-6 animate-pulse" />
+                  </div>
+                  <Skeleton className="h-5 w-20 rounded-md animate-pulse" />
+                </div>
+              </div>
+            </Card>
           ))}
         </div>
       ) : filtered.length === 0 ? (
@@ -412,9 +424,9 @@ function ProjectsPage() {
           <p className="text-[14px] font-semibold text-foreground">
             No projects match your filters
           </p>
-          <p className="mt-1 text-[13px] text-muted-foreground">
+          <TypoCaption as="p">
             Try adjusting or resetting your filters.
-          </p>
+          </TypoCaption>
           {hasActiveFilters && (
             <button
               onClick={handleClearAllFilters}
@@ -441,9 +453,9 @@ function ProjectsPage() {
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[14px] font-semibold text-foreground">{p.name}</p>
-                      <p className="mt-0.5 line-clamp-2 text-[12px] text-muted-foreground">
+                      <TypoCaption as="p">
                         {p.description}
-                      </p>
+                      </TypoCaption>
                     </div>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-1">

@@ -1,14 +1,12 @@
-// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import api from "@/lib/api";
+import { TypoHeading } from "@/components/shared/Typography";
 
 export const Route = createFileRoute("/_app/admin/maintenance")({
   component: AdminMaintenance,
 });
 
-interface MaintenanceWindowRow {
-  id: string | number;
 interface MaintenanceWindow {
   id: string;
   start_time: string;
@@ -18,7 +16,6 @@ interface MaintenanceWindow {
 }
 
 function AdminMaintenance() {
-  const [windows, setWindows] = useState<MaintenanceWindowRow[]>([]);
   const [windows, setWindows] = useState<MaintenanceWindow[]>([]);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -28,19 +25,14 @@ function AdminMaintenance() {
 
   const fetchWindows = async () => {
     try {
-      // The API client resolves to the parsed body, not an axios response.
-      setWindows(await api.get<MaintenanceWindowRow[]>("/api/maintenance"));
+      setWindows(await api.get<MaintenanceWindow[]>("/api/maintenance"));
     } catch (error) {
-      const res = await api.get<any>("/api/maintenance");
-      setWindows(res.data || res);
-    } catch (error: any) {
       console.error("Failed to fetch maintenance windows", error);
     }
   };
 
   useEffect(() => {
     void fetchWindows();
-    // fetchWindows closes over nothing that changes between renders.
   }, []);
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -57,8 +49,6 @@ function AdminMaintenance() {
       alert("Maintenance window scheduled");
       void fetchWindows();
     } catch (error) {
-      fetchWindows();
-    } catch (error: any) {
       alert("Failed to schedule maintenance");
       console.error(error);
     } finally {
@@ -66,24 +56,22 @@ function AdminMaintenance() {
     }
   };
 
-  const handleDelete = async (id: string | number) => {
+  const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this maintenance window?")) return;
     try {
       await api.delete(`/api/maintenance/${id}`);
       void fetchWindows();
     } catch (error) {
-      fetchWindows();
-    } catch (error: any) {
       console.error("Failed to delete window", error);
     }
   };
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Maintenance Mode Configuration</h1>
+      <TypoHeading as="h1">Maintenance Mode Configuration</TypoHeading>
 
       <div className="bg-white p-6 rounded shadow mb-8">
-        <h2 className="text-xl font-semibold mb-4">Schedule New Window</h2>
+        <TypoHeading as="h2">Schedule New Window</TypoHeading>
         <form onSubmit={handleCreate} className="flex flex-col gap-4 max-w-md">
           <div>
             <label className="block mb-1">Start Time</label>
@@ -136,7 +124,7 @@ function AdminMaintenance() {
       </div>
 
       <div className="bg-white p-6 rounded shadow">
-        <h2 className="text-xl font-semibold mb-4">Scheduled Windows</h2>
+        <TypoHeading as="h2">Scheduled Windows</TypoHeading>
         {windows.length === 0 ? (
           <p>No maintenance windows scheduled.</p>
         ) : (

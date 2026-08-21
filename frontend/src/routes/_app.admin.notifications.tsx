@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
@@ -6,25 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, CheckCircle, Clock, XCircle, RefreshCw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { TypoSection, TypoCaption, TypoCard, TypoHeading } from "@/components/shared/Typography";
 
 export const Route = createFileRoute("/_app/admin/notifications")({
   component: AdminNotificationsPage,
 });
-
-interface NotificationDeliveryStats {
-  total: number;
-  pending: number;
-  sent: number;
-  failed: number;
-}
-
-interface FailedNotification {
-  id: string;
-  title: string;
-  message: string;
-  channel: string;
-  recipient_id: string;
-}
 
 function AdminNotificationsPage() {
   const queryClient = useQueryClient();
@@ -42,7 +27,6 @@ function AdminNotificationsPage() {
     // The API client already resolves to the parsed body. Reading `.data` off
     // it handed React Query `undefined`, so every tile rendered its `|| 0`
     // fallback no matter what the server said.
-    queryFn: () => api.get<NotificationDeliveryStats>("/admin/notifications/stats"),
     queryFn: async () => {
       return api.get<{
         total: number;
@@ -55,7 +39,6 @@ function AdminNotificationsPage() {
 
   const { data: failed, isLoading: failedLoading } = useQuery({
     queryKey: ["admin-notification-failed"],
-    queryFn: () => api.get<FailedNotification[]>("/admin/notifications/failed"),
     queryFn: async () => {
       return api.get<FailedNotification[]>("/admin/notifications/failed");
     },
@@ -76,10 +59,10 @@ function AdminNotificationsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Notification Delivery Stats</h2>
-        <p className="text-muted-foreground">
+        <TypoHeading as="h2">Notification Delivery Stats</TypoHeading>
+        <TypoCaption as="p">
           Monitor the global delivery metrics for unified notifications.
-        </p>
+        </TypoCaption>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -125,25 +108,24 @@ function AdminNotificationsPage() {
       </div>
 
       <div className="mt-8">
-        <h3 className="text-xl font-bold mb-4">Failed Deliveries Queue</h3>
+        <TypoSection>Failed Deliveries Queue</TypoSection>
         {failed?.length === 0 ? (
-          <p className="text-muted-foreground">No failed deliveries to display.</p>
+          <TypoCaption as="p">No failed deliveries to display.</TypoCaption>
         ) : (
           <div className="space-y-4">
-            {failed?.map((notification) => (
             {failed?.map((notification: FailedNotification) => (
               <Card key={notification.id}>
                 <CardContent className="p-4 flex items-center justify-between">
                   <div>
-                    <h4 className="font-semibold flex items-center gap-2">
+                    <TypoCard>
                       {notification.title}
                       <Badge variant="destructive">Failed</Badge>
                       <Badge variant="outline">{notification.channel}</Badge>
-                    </h4>
-                    <p className="text-sm text-muted-foreground">{notification.message}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    </TypoCard>
+                    <TypoCaption as="p">{notification.message}</TypoCaption>
+                    <TypoCaption as="p">
                       Recipient: {notification.recipient_id}
-                    </p>
+                    </TypoCaption>
                   </div>
                   <Button
                     variant="outline"

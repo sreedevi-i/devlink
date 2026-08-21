@@ -2,6 +2,7 @@ import React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { UserAvatar, type UserAvatarSize, type OnlineStatus } from "@/components/user-avatar";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export const Route = createFileRoute("/avatar")({
   head: () => ({
@@ -75,7 +76,7 @@ function Section({
       <h2 id={`${id}-heading`} className="text-lg font-semibold text-card-foreground">
         {title}
       </h2>
-      {description ? <p className="mt-1 text-sm text-muted-foreground">{description}</p> : null}
+      {description ? <TypoCaption as="p">{description}</TypoCaption> : null}
       <div className="mt-6 flex flex-wrap items-end gap-6">{children}</div>
     </section>
   );
@@ -100,11 +101,11 @@ function AvatarDemo() {
 
         {/* Page header */}
         <header>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Avatar</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <TypoHeading as="h1">Avatar</TypoHeading>
+          <TypoCaption as="p">
             A reusable, accessible avatar component with image fallback, initials, online presence
             indicator, verification badge, and six size presets.
-          </p>
+          </TypoCaption>
         </header>
 
         {/* ── Section: Sizes ───────────────────────────────────────────── */}
@@ -116,7 +117,7 @@ function AvatarDemo() {
           {SIZES.map((size) => (
             <div key={size} className="flex flex-col items-center gap-2">
               <UserAvatar src={DEMO_IMG} name="Ada Lovelace" size={size} />
-              <span className="font-mono text-xs text-muted-foreground">{size}</span>
+              <TypoCaption>{size}</TypoCaption>
             </div>
           ))}
         </Section>
@@ -141,9 +142,9 @@ function AvatarDemo() {
                 size="lg"
                 id={`initials-avatar-${i}`}
               />
-              <span className="max-w-[6rem] truncate text-center text-xs text-muted-foreground">
+              <TypoCaption>
                 {u.name ?? "(no name)"}
-              </span>
+              </TypoCaption>
             </div>
           ))}
         </Section>
@@ -171,7 +172,7 @@ function AvatarDemo() {
                 status={s}
                 id={`status-avatar-${s}`}
               />
-              <span className="text-xs text-muted-foreground">{STATUS_LABEL[s]}</span>
+              <TypoCaption>{STATUS_LABEL[s]}</TypoCaption>
             </div>
           ))}
         </Section>

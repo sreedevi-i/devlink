@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
 import { useTranslation } from "@/context/I18nContext";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 interface ErrorLayoutProps {
   icon: ReactNode;
@@ -34,9 +35,9 @@ export function ErrorLayout({
       <div className="w-full max-w-md text-center">
         <div className="mb-6 flex justify-center">{icon}</div>
 
-        <h1 className="text-3xl font-bold text-foreground">{title}</h1>
+        <TypoHeading as="h1">{title}</TypoHeading>
 
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{description}</p>
+        <TypoCaption as="p">{description}</TypoCaption>
 
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link

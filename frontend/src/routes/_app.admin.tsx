@@ -1,3 +1,4 @@
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 import { Outlet, createFileRoute, Link } from "@tanstack/react-router";
 
 const tabActiveProps = {
@@ -34,11 +35,15 @@ export const Route = createFileRoute("/_app/admin")({
     // super-admin check belongs here so we stop rendering an empty console to
     // people who will only get 403s from every panel inside it.
   },
-  component: () => (
+  component: AdminLayout,
+});
+
+function AdminLayout() {
+  return (
     <div className="flex flex-col gap-6 w-full max-w-7xl mx-auto p-4 md:p-8">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Admin Console</h1>
-        <p className="text-muted-foreground">Manage your platform and view audit logs.</p>
+        <TypoHeading as="h1">Admin Console</TypoHeading>
+        <TypoCaption as="p">Manage your platform and view audit logs.</TypoCaption>
 
         <div className="flex gap-4 border-b pb-2 mt-4">
           <a href="/admin/audit-logs" className="text-blue-600 hover:underline">
@@ -60,9 +65,9 @@ export const Route = createFileRoute("/_app/admin")({
             API Request Analytics
           </a>
         </div>
-        <p className="text-muted-foreground">
+        <TypoCaption as="p">
           Manage your platform, view audit logs, and monitor background tasks.
-        </p>
+        </TypoCaption>
       </div>
 
       <div className="flex border-b border-border gap-2 md:gap-4 overflow-x-auto scrollbar-none">
@@ -119,5 +124,5 @@ export const Route = createFileRoute("/_app/admin")({
 
       <Outlet />
     </div>
-  ),
-});
+  );
+}

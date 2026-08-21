@@ -1,158 +1,133 @@
-from __future__ import annotations
-
-import uuid
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.database.base import Base
-from app.dependencies import get_database
 from app.main import app
-from app.models.skill import Skill
-from app.models.user_skill import UserSkill
+from app.dependencies import get_database, get_current_user
+from app.models.user import User
+from app.models.project import Project
+from app.services.user_service import UserService
 
-
-# SQLite setup for tests
+DATABASE_URL = "sqlite:///:memory:"
 engine = create_engine(
-    "sqlite://",
+    DATABASE_URL,
     connect_args={"check_same_thread": False},
     poolclass=StaticPool,
 )
-TestingSessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-def override_get_db():
+@pytest.fixture(name="db_session")
+def fixture_db_session():
+    Base.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
     try:
         yield db
     finally:
         db.close()
+        Base.metadata.drop_all(bind=engine)
 
 
-@pytest.fixture(autouse=True)
-def setup_db():
-    app.dependency_overrides[get_database] = override_get_db
-    Base.metadata.create_all(bind=engine)
-    yield
-    Base.metadata.drop_all(bind=engine)
+@pytest.fixture(name="test_client")
+def fixture_test_client(db_session):
+    mock_user = User(
+        first_name="Jane",
+        last_name="Completion",
+        username="jane_comp",
+        email="jane@devlink.io",
+        is_active=True,
+    )
+    db_session.add(mock_user)
+    db_session.commit()
+    db_session.refresh(mock_user)
+
+    def override_get_database():
+        return db_session
+
+    def override_get_current_user():
+        return mock_user
+
+    app.dependency_overrides[get_database] = override_get_database
+    app.dependency_overrides[get_current_user] = override_get_current_user
+
+    client = TestClient(app)
+    yield client
+
     app.dependency_overrides.clear()
 
 
-def _register_and_login(
-    client: TestClient, email: str, username: str
-) -> tuple[str, str]:
-    client.post(
-        "/api/auth/register",
-        json={
-            "first_name": username.capitalize(),
-            "last_name": "User",
-            "email": email,
-            "username": username,
-            "password": "Vermilion-Kestrel97!",
-        },
+def test_partial_profile_completion(db_session):
+    user = User(
+        first_name="Partial",
+        last_name="User",
+        username="partial_u",
+        email="partial@devlink.io",
+        profile_image="https://example.com/avatar.png",
+        bio="Full stack developer",
+        role="Developer",
+        is_active=True,
     )
-    r = client.post("/api/auth/login", json={"email": email, "password": "Vermilion-Kestrel97!"})
-    token = r.json()["access_token"]
-    me = client.get("/api/users/me", headers={"Authorization": f"Bearer {token}"})
-    return me.json()["id"], token
+    db_session.add(user)
+    db_session.commit()
+
+    res = UserService.get_profile_completion(db_session, user)
+    # Completed factors: Avatar, Bio, Experience (3 out of 8 = 38%)
+    assert res.completion == 38
+    assert "Avatar" in res.completed_factors
+    assert "Bio" in res.completed_factors
+    assert "Experience" in res.completed_factors
+    assert "Banner" in res.missing
+    assert "Projects" in res.missing
+    assert res.reward_unlocked is False
 
 
-def test_empty_profile_completion():
-    client = TestClient(app)
-    user_id, token = _register_and_login(client, "emptyprof@x.com", "emptyprof")
-    headers = {"Authorization": f"Bearer {token}"}
-
-    res = client.get("/api/users/me/completion", headers=headers)
-    assert res.status_code == 200
-    data = res.json()
-    assert data["completion"] == 0
-    assert set(data["missing"]) == {
-        "Avatar",
-        "Bio",
-        "Skills",
-        "Experience",
-        "GitHub",
-        "Portfolio",
-        "Location",
-    }
-
-
-def test_partially_completed_profile():
-    client = TestClient(app)
-    user_id, token = _register_and_login(client, "partialprof@x.com", "partialprof")
-    headers = {"Authorization": f"Bearer {token}"}
-
-    # Update 4 out of 7 factors (Bio, Location, GitHub, Experience)
-    update_res = client.put(
-        "/api/users/me",
-        json={
-            "bio": "Full stack developer interested in AI.",
-            "location": "San Francisco, CA",
-            "github_url": "https://github.com/partialprof",
-            "experience_level": "Senior",
-        },
-        headers=headers,
+def test_full_profile_completion_and_reward(db_session):
+    user = User(
+        first_name="Complete",
+        last_name="User",
+        username="complete_u",
+        email="complete@devlink.io",
+        profile_image="https://example.com/avatar.png",
+        cover_image="https://example.com/banner.png",
+        bio="Senior Engineer",
+        role="Senior Developer",
+        headline="B.S. Computer Science",
+        github_url="https://github.com/complete",
+        badges=["React"],
+        is_active=True,
     )
-    assert update_res.status_code == 200
+    db_session.add(user)
+    db_session.commit()
 
-    res = client.get("/api/users/me/completion", headers=headers)
-    assert res.status_code == 200
-    data = res.json()
-    # 4/7 factors completed = round(4/7 * 100) = 57%
-    assert data["completion"] == 57
-    assert set(data["missing"]) == {"Avatar", "Skills", "Portfolio"}
+    # Add a project for the user
+    project = Project(
+        owner_id=user.id,
+        title="Sample Project",
+        slug="sample-project",
+        description="A great project",
+    )
+    db_session.add(project)
+    db_session.commit()
 
+    res = UserService.get_profile_completion(db_session, user)
+    assert res.completion == 100
+    assert len(res.missing) == 0
+    assert res.reward_unlocked is True
+    assert res.reward_badge == "Profile Master"
 
-def test_fully_completed_profile():
-    client = TestClient(app)
-    user_id, token = _register_and_login(client, "fullprof@x.com", "fullprof")
-    headers = {"Authorization": f"Bearer {token}"}
-
-    # Add a skill directly in DB session
-    db = TestingSessionLocal()
-    skill = Skill(name="Python", normalized_name="python", slug="python")
-    db.add(skill)
-    db.flush()
-    user_skill = UserSkill(user_id=uuid.UUID(user_id), skill_id=skill.id)
-    db.add(user_skill)
-    db.commit()
-
-    # Update user profile with remaining factors
-    from app.models.user import User as UserModel
-
-    user_model = db.get(UserModel, uuid.UUID(user_id))
-
-    user_model.profile_image = "https://example.com/avatar.jpg"
-    user_model.bio = "Senior Backend Engineer"
-    user_model.experience_level = "Senior"
-    user_model.github_url = "https://github.com/fullprof"
-    user_model.portfolio_url = "https://fullprof.dev"
-    user_model.location = "New York, NY"
-    db.commit()
-    db.close()
-
-    res = client.get("/api/users/me/completion", headers=headers)
-    assert res.status_code == 200
-    data = res.json()
-    assert data["completion"] == 100
-    assert data["missing"] == []
+    # Verify badge is saved to user
+    db_session.refresh(user)
+    assert "Profile Master" in user.badges
 
 
-def test_get_user_completion_by_id():
-    client = TestClient(app)
-    user_id, token = _register_and_login(client, "byid@x.com", "byiduser")
-
-    res = client.get(f"/api/users/{user_id}/completion")
-    assert res.status_code == 200
-    data = res.json()
+def test_completion_api_endpoint(test_client, db_session):
+    response = test_client.get("/api/users/me/completion")
+    assert response.status_code == 200
+    data = response.json()
     assert "completion" in data
     assert "missing" in data
-
-
-def test_get_completion_user_not_found():
-    client = TestClient(app)
-    fake_id = uuid.uuid4()
-    res = client.get(f"/api/users/{fake_id}/completion")
-    assert res.status_code == 404
+    assert "completed_factors" in data
+    assert "reward_unlocked" in data

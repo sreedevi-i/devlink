@@ -3,6 +3,8 @@ from __future__ import annotations
 import logging
 import re
 from typing import Any, Dict
+from datetime import datetime, timezone
+from app.core.tracing import get_request_id
 
 from fastapi import Request, status
 from fastapi.exceptions import HTTPException, RequestValidationError
@@ -48,30 +50,28 @@ def generate_error_code(status_code: int, message: str | None) -> str:
 
     return "_".join(words).upper()
 
-
 def format_error_response(
     code: str,
     message: str,
     details: Any = None,
+    request: Request | None = None,
 ) -> Dict[str, Any]:
     """
-    Build standardized JSON response payload:
-    {
-        "error": {
-            "code": "PROJECT_NOT_FOUND",
-            "message": "Project not found."
-        }
-    }
+    Build standardized JSON response payload.
     """
+    request_id = getattr(request.state, "request_id", None) if request else None
+    request_id = request_id or get_request_id() or "unknown"
+
     error_dict: Dict[str, Any] = {
-        "code": code,
+        "error_code": code,
         "message": message,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "request_id": request_id,
     }
     if details is not None:
         error_dict["details"] = details
 
     return {"error": error_dict}
-
 
 async def http_exception_handler(
     request: Request,
@@ -104,6 +104,63 @@ async def http_exception_handler(
     return JSONResponse(status_code=status_code, content=payload)
 
 
+def _jsonable_validation_errors(errors: list[Any]) -> list[Dict[str, Any]]:
+    """Make `RequestValidationError.errors()` safe to serialise.
+
+    When a Pydantic `field_validator` rejects a value by raising `ValueError`,
+    Pydantic v2 puts the exception *object* in the entry's `ctx`:
+
+        {'type': 'value_error', 'loc': (...), 'msg': '...',
+         'ctx': {'error': ValueError('...')}}
+
+    `JSONResponse` cannot encode that, so the handler blew up with a TypeError
+    while rendering the response -- turning what should have been a clean 422
+    into a crash. It affects every endpoint whose schema uses a custom
+    validator; `schemas/skill.py` and `schemas/user.py` already have some.
+
+    `msg` already carries the human-readable text, so the exception object adds
+    nothing. Anything non-primitive in `ctx` is stringified rather than dropped,
+    which keeps the detail useful without assuming what it holds.
+    """
+    cleaned: list[Dict[str, Any]] = []
+
+    for error in errors:
+        entry = dict(error)
+
+        # loc is a tuple, and may contain ints for list indices.
+        if "loc" in entry:
+            entry["loc"] = [str(part) for part in entry["loc"]]
+
+        ctx = entry.get("ctx")
+        if isinstance(ctx, dict):
+            entry["ctx"] = {
+                key: (
+                    value
+                    if isinstance(value, (str, int, float, bool, type(None)))
+                    else str(value)
+                )
+                for key, value in ctx.items()
+            }
+
+        # The offending input can be an arbitrary object on a nested model.
+        if "input" in entry and not isinstance(
+            entry["input"], (str, int, float, bool, type(None), list, dict)
+        ):
+            entry["input"] = str(entry["input"])
+
+        # Pydantic includes a docs link that is a plain string, but drop
+        # anything else unexpected rather than risk the same crash.
+        cleaned.append(
+            {
+                key: value
+                for key, value in entry.items()
+                if key in {"type", "loc", "msg", "ctx", "input", "url"}
+            }
+        )
+
+    return cleaned
+
+
 async def validation_exception_handler(
     request: Request,
     exc: RequestValidationError,
@@ -111,7 +168,7 @@ async def validation_exception_handler(
     """
     Handle Pydantic / FastAPI request validation errors (422).
     """
-    errors = exc.errors()
+    errors = _jsonable_validation_errors(exc.errors())
     message = "Request validation failed."
     if errors:
         first_err = errors[0]
@@ -176,6 +233,7 @@ async def global_exception_handler(
     payload = format_error_response(
         code="INTERNAL_SERVER_ERROR",
         message="An unexpected internal server error occurred.",
+        request=request,
     )
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -192,16 +250,16 @@ async def integrity_error_handler(
     """
     # Extract the error detail from the exception
     detail = str(exc.orig) if exc.orig else str(exc)
-    
+
     # Generic message, but try to find the specific field if possible
     message = "A record with this information already exists."
-    
+
     # PostgreSQL duplicate key error usually looks like:
     # duplicate key value violates unique constraint "ix_users_email"
     # DETAIL:  Key (email)=(test@example.com) already exists.
     if "already exists" in detail.lower() or "unique constraint" in detail.lower():
         message = "This record already exists. Please use a unique value."
-        
+
         # Try to extract the field name from the detail
         # e.g., Key (username)=(admin) already exists.
         match = re.search(r"Key \((.*?)\)=", detail)

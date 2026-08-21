@@ -121,6 +121,8 @@ class RecommendedBuilder(BaseModel):
     experience_level: Optional[str] = None
     open_to_work: bool = True
     location: Optional[str] = None
+    is_verified: bool = False
+    premium: bool = False
 
     matched_skills: list[str] = Field(
         default_factory=list,

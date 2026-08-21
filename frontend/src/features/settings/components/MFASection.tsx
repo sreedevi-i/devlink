@@ -10,6 +10,7 @@ import {
   Check,
 } from "lucide-react";
 import { toast } from "sonner";
+import { TypoSection, TypoCard } from "@/components/shared/Typography";
 
 export const MFASection: React.FC = () => {
   const [mfaEnabled, setMfaEnabled] = useState(false);
@@ -175,9 +176,9 @@ export const MFASection: React.FC = () => {
     <div className="space-y-6 bg-gray-900/40 border border-gray-800 rounded-xl p-6">
       <div className="flex items-start justify-between">
         <div className="space-y-1">
-          <h3 className="text-base font-semibold text-white flex items-center gap-2">
+          <TypoSection>
             <Lock size={18} className="text-indigo-400" /> Two-Factor Authentication (2FA)
-          </h3>
+          </TypoSection>
           <p className="text-xs text-gray-400">
             Secure your DevLink account using Time-based One-Time Passwords (TOTP) from
             authenticator apps like Google Authenticator or 1Password.
@@ -235,7 +236,7 @@ export const MFASection: React.FC = () => {
       {showSetupModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-5 shadow-2xl">
-            <h4 className="text-lg font-semibold text-white">Set Up Authenticator App</h4>
+            <TypoCard>Set Up Authenticator App</TypoCard>
             <p className="text-xs text-gray-400">
               1. Scan the secret key or enter it into your authenticator app (Google Authenticator,
               Authy, 1Password).
@@ -289,9 +290,9 @@ export const MFASection: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-5 shadow-2xl">
             <div className="space-y-1">
-              <h4 className="text-lg font-semibold text-white flex items-center gap-2">
+              <TypoCard>
                 <Key className="text-amber-400" size={18} /> Recovery Codes
-              </h4>
+              </TypoCard>
               <p className="text-xs text-gray-400">
                 Save these single-use recovery codes in a safe place. If you lose your phone, you
                 can use one of these codes to log in.
@@ -337,9 +338,9 @@ export const MFASection: React.FC = () => {
       {showDisableModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="w-full max-w-sm bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4 shadow-2xl">
-            <h4 className="text-base font-semibold text-white">
+            <TypoCard>
               Disable Two-Factor Authentication
-            </h4>
+            </TypoCard>
             <p className="text-xs text-gray-400">
               Enter your current 6-digit authenticator code or a recovery code to confirm disabling
               2FA.

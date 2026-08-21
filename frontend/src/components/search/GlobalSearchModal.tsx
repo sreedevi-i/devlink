@@ -12,9 +12,12 @@ import {
   Trash2,
   CornerDownLeft,
   Command,
+  LayoutDashboard,
+  Sparkles,
 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useTheme } from "@/hooks/useTheme";
 import {
   builders,
   projects,
@@ -29,12 +32,13 @@ import {
 } from "@/mocks/seed";
 import { repositories, type RepositoryItem } from "@/mocks/repositories";
 import { cn } from "@/lib/utils";
+import { TypoCaption } from "@/components/shared/Typography";
 
 const RECENT_SEARCHES_KEY = "devlink-recent-searches";
 const MAX_RECENT_SEARCHES = 5;
 
 type SearchCategory =
-  "developers" | "projects" | "posts" | "messages" | "hackathons" | "repositories";
+  "developers" | "projects" | "posts" | "messages" | "hackathons" | "repositories" | "commands";
 
 export interface SearchResultItem {
   id: string;
@@ -59,8 +63,69 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { toggleTheme } = useTheme();
 
   const debouncedQuery = useDebounce(query, 250);
+
+  const commands = useMemo<SearchResultItem[]>(
+    () => [
+      {
+        id: "cmd-dashboard",
+        category: "commands",
+        title: "Go to Dashboard",
+        subtitle: "Jump to your home dashboard feed",
+        url: "/dashboard",
+        icon: <LayoutDashboard size={16} className="text-primary" />,
+        badge: "Navigation",
+      },
+      {
+        id: "cmd-projects",
+        category: "commands",
+        title: "Go to Projects",
+        subtitle: "Browse and discover active projects",
+        url: "/projects",
+        icon: <FolderGit2 size={16} className="text-emerald-500" />,
+        badge: "Navigation",
+      },
+      {
+        id: "cmd-builders",
+        category: "commands",
+        title: "Go to Builders",
+        subtitle: "Find other developers and collaborators",
+        url: "/builders",
+        icon: <Users size={16} className="text-blue-500" />,
+        badge: "Navigation",
+      },
+      {
+        id: "cmd-flares",
+        category: "commands",
+        title: "Go to Flares",
+        subtitle: "View the community feed and updates",
+        url: "/flares",
+        icon: <Rss size={16} className="text-amber-500" />,
+        badge: "Navigation",
+      },
+      {
+        id: "cmd-hackathons",
+        category: "commands",
+        title: "Go to Hackathons",
+        subtitle: "Join hackathons and team listings",
+        url: "/hackathons",
+        icon: <Trophy size={16} className="text-yellow-500" />,
+        badge: "Navigation",
+      },
+      {
+        id: "cmd-theme",
+        category: "commands",
+        title: "Toggle Theme",
+        subtitle: "Switch between Light and Dark mode",
+        url: "action:toggle-theme",
+        icon: <Sparkles size={16} className="text-rose-500" />,
+        badge: "Action",
+      },
+    ],
+    [toggleTheme],
+  );
 
   // Load recent searches on mount
   useEffect(() => {
@@ -112,12 +177,19 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
     });
   }, []);
 
-  // Filter search results across all 6 categories
+  // Filter search results across all categories
   const searchResults = useMemo<SearchResultItem[]>(() => {
     const q = debouncedQuery.trim().toLowerCase();
-    if (!q) return [];
+    if (!q) return commands;
 
     const results: SearchResultItem[] = [];
+
+    // 0. Commands
+    commands.forEach((c) => {
+      if (c.title.toLowerCase().includes(q) || c.subtitle.toLowerCase().includes(q)) {
+        results.push(c);
+      }
+    });
 
     // 1. Developers
     builders.forEach((b: Builder) => {
@@ -256,9 +328,13 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
   const handleNavigate = useCallback(
     (targetUrl: string) => {
       onClose();
-      navigate({ to: targetUrl as unknown as "/flares" });
+      if (targetUrl === "action:toggle-theme") {
+        toggleTheme();
+      } else {
+        navigate({ to: targetUrl as unknown as "/flares" });
+      }
     },
-    [onClose, navigate],
+    [onClose, navigate, toggleTheme],
   );
 
   // Handle keyboard shortcuts (ArrowUp, ArrowDown, Enter, Escape)
@@ -379,88 +455,63 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
 
         {/* Search Content Body */}
         <div ref={resultsContainerRef} className="max-h-[380px] overflow-y-auto p-2">
-          {/* Empty state: Recent Searches & Suggestions */}
-          {!query.trim() && (
-            <div className="space-y-4 p-2">
-              {recentSearches.length > 0 && (
-                <div>
-                  <div className="flex items-center justify-between px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                    <span className="flex items-center gap-1.5">
-                      <Clock size={12} /> Recent Searches
-                    </span>
-                    <button
-                      onClick={clearRecentSearches}
-                      className="text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1 normal-case"
-                    >
-                      <Trash2 size={11} /> Clear
-                    </button>
-                  </div>
-                  <div className="mt-1 space-y-1">
-                    {recentSearches.map((term) => (
-                      <div
-                        key={term}
-                        onClick={() => {
-                          setQuery(term);
-                          inputRef.current?.focus();
-                        }}
-                        className="flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-[13px] text-foreground hover:bg-muted/70 transition-colors"
-                      >
-                        <span className="flex items-center gap-2">
-                          <Clock size={14} className="text-muted-foreground" />
-                          {term}
-                        </span>
-                        <button
-                          onClick={(e) => removeRecentSearch(term, e)}
-                          className="text-muted-foreground hover:text-foreground"
-                          aria-label={`Remove ${term}`}
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
+          {/* Empty state: Recent Searches (only if query is empty) */}
+          {!query.trim() && recentSearches.length > 0 && (
+            <div className="space-y-4 p-2 pb-0">
               <div>
-                <p className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                  Popular Suggestions
-                </p>
-                <div className="mt-1 grid grid-cols-2 gap-1.5 sm:grid-cols-3">
-                  {[
-                    { label: "React", icon: <Users size={13} /> },
-                    { label: "TypeScript", icon: <FolderGit2 size={13} /> },
-                    { label: "AI Chatbot", icon: <FolderGit2 size={13} /> },
-                    { label: "Hackathons", icon: <Trophy size={13} /> },
-                    { label: "FastAPI", icon: <GitBranch size={13} /> },
-                    { label: "Next.js", icon: <Users size={13} /> },
-                  ].map((sug) => (
-                    <button
-                      key={sug.label}
+                <div className="flex items-center justify-between px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <Clock size={12} /> Recent Searches
+                  </span>
+                  <button
+                    onClick={clearRecentSearches}
+                    className="text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1 normal-case cursor-pointer"
+                  >
+                    <Trash2 size={11} /> Clear
+                  </button>
+                </div>
+                <div className="mt-1 space-y-1">
+                  {recentSearches.map((term) => (
+                    <div
+                      key={term}
                       onClick={() => {
-                        setQuery(sug.label);
+                        setQuery(term);
                         inputRef.current?.focus();
                       }}
-                      className="flex items-center gap-2 rounded-md border border-border/60 bg-surface px-3 py-2 text-left text-[12px] font-medium text-foreground hover:border-primary/50 hover:bg-primary-soft/30 transition-colors"
+                      className="flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-[13px] text-foreground hover:bg-muted/70 transition-colors"
                     >
-                      <span className="text-muted-foreground">{sug.icon}</span>
-                      {sug.label}
-                    </button>
+                      <span className="flex items-center gap-2">
+                        <Clock size={14} className="text-muted-foreground" />
+                        {term}
+                      </span>
+                      <button
+                        onClick={(e) => removeRecentSearch(term, e)}
+                        className="text-muted-foreground hover:text-foreground cursor-pointer"
+                        aria-label={`Remove ${term}`}
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
                   ))}
                 </div>
               </div>
             </div>
           )}
 
-          {/* Results List */}
-          {query.trim() && filteredResults.length > 0 && (
-            <div className="space-y-1">
+          {/* Results List (both empty query commands & actual search results) */}
+          {filteredResults.length > 0 && (
+            <div className="space-y-1 p-2">
+              {!query.trim() && (
+                <TypoCaption as="p">
+                  Navigation & Actions
+                </TypoCaption>
+              )}
               {filteredResults.map((item, idx) => (
                 <div
                   key={item.id}
                   data-selected={idx === selectedIndex}
                   onClick={() => {
-                    saveRecentSearch(query);
+                    saveRecentSearch(query || item.title);
                     handleNavigate(item.url);
                   }}
                   onMouseEnter={() => setSelectedIndex(idx)}
@@ -479,14 +530,14 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
                           {item.title}
                         </p>
                         {item.badge && (
-                          <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+                          <TypoCaption>
                             {item.badge}
-                          </span>
+                          </TypoCaption>
                         )}
                       </div>
-                      <p className="truncate text-[12px] text-muted-foreground mt-0.5">
+                      <TypoCaption as="p">
                         {item.subtitle}
-                      </p>
+                      </TypoCaption>
                     </div>
                   </div>
                   {idx === selectedIndex && (
@@ -494,6 +545,37 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
                   )}
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Popular Suggestions (only if query is empty) */}
+          {!query.trim() && (
+            <div className="p-2 pt-4">
+              <TypoCaption as="p">
+                Popular Suggestions
+              </TypoCaption>
+              <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+                {[
+                  { label: "React", icon: <Users size={13} /> },
+                  { label: "TypeScript", icon: <FolderGit2 size={13} /> },
+                  { label: "AI Chatbot", icon: <FolderGit2 size={13} /> },
+                  { label: "Hackathons", icon: <Trophy size={13} /> },
+                  { label: "FastAPI", icon: <GitBranch size={13} /> },
+                  { label: "Next.js", icon: <Users size={13} /> },
+                ].map((sug) => (
+                  <button
+                    key={sug.label}
+                    onClick={() => {
+                      setQuery(sug.label);
+                      inputRef.current?.focus();
+                    }}
+                    className="flex items-center gap-2 rounded-md border border-border/60 bg-surface px-3 py-2 text-left text-[12px] font-medium text-foreground hover:border-primary/50 hover:bg-primary-soft/30 transition-colors cursor-pointer"
+                  >
+                    <TypoCaption>{sug.icon}</TypoCaption>
+                    {sug.label}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 

@@ -1,3 +1,4 @@
+import { TypoHeading } from "@/components/shared/Typography";
 import React from "react";
 
 interface OrganizationHeaderProps {
@@ -7,6 +8,8 @@ interface OrganizationHeaderProps {
   location?: string;
   website?: string;
   isHiring: boolean;
+  isVerified?: boolean;
+  onVerifyClick?: () => void;
 }
 
 export const OrganizationHeader: React.FC<OrganizationHeaderProps> = ({
@@ -16,6 +19,8 @@ export const OrganizationHeader: React.FC<OrganizationHeaderProps> = ({
   location,
   website,
   isHiring,
+  isVerified = false,
+  onVerifyClick,
 }) => {
   return (
     <div className="relative rounded-xl border border-gray-800 bg-gray-900/50 overflow-hidden mb-6">
@@ -39,28 +44,48 @@ export const OrganizationHeader: React.FC<OrganizationHeaderProps> = ({
           </div>
 
           <div className="mb-2">
-            <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
+            <TypoHeading as="h1">
               {name}
+              {isVerified && (
+                <span
+                  title="Verified Organization"
+                  className="inline-flex items-center justify-center w-5 h-5 bg-blue-500 text-white rounded-full text-xs shadow-sm"
+                >
+                  ✓
+                </span>
+              )}
               {isHiring && (
                 <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
                   Hiring
                 </span>
               )}
-            </h1>
+            </TypoHeading>
             {location && <p className="text-sm text-gray-400">{location}</p>}
           </div>
         </div>
 
-        {website && (
-          <a
-            href={website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition-colors"
-          >
-            Visit Website
-          </a>
-        )}
+        <div className="flex items-center gap-3">
+          {!isVerified && onVerifyClick && (
+            <button
+              onClick={onVerifyClick}
+              type="button"
+              className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 font-medium text-sm transition-colors"
+            >
+              Apply for Verification
+            </button>
+          )}
+
+          {website && (
+            <a
+              href={website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition-colors"
+            >
+              Visit Website
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );

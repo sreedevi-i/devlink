@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
+import { TypoSection, TypoCaption } from "@/components/shared/Typography";
 
 interface ProjectVersion {
   id: string;
@@ -21,8 +22,8 @@ interface ProjectVersion {
 }
 
 interface DiffField {
-  old: any;
-  new: any;
+  old: unknown;
+  new: unknown;
 }
 
 interface CompareResponse {
@@ -36,7 +37,10 @@ interface ProjectVersionHistoryProps {
   isOwnerOrMaintainer?: boolean;
 }
 
-export function ProjectVersionHistory({ projectId, isOwnerOrMaintainer = true }: ProjectVersionHistoryProps) {
+export function ProjectVersionHistory({
+  projectId,
+  isOwnerOrMaintainer = true,
+}: ProjectVersionHistoryProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedVersion, setSelectedVersion] = useState<number | null>(null);
@@ -45,15 +49,19 @@ export function ProjectVersionHistory({ projectId, isOwnerOrMaintainer = true }:
   const { data: versionsData, isLoading } = useQuery({
     queryKey: ["project-versions", projectId],
     queryFn: async () => {
-      const res: any = await api.get(`/api/projects/${projectId}/versions`);
-      return res.data || res;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = (await api.get(`/api/projects/${projectId}/versions`)) as any;
+      return res?.data || res;
     },
   });
 
   const compareMutation = useMutation({
     mutationFn: async (v1: number) => {
-      const res: any = await api.get(`/api/projects/${projectId}/versions/compare?v1=${v1}&v2=current`);
-      return res.data || res;
+      const res = (await api.get(
+        `/api/projects/${projectId}/versions/compare?v1=${v1}&v2=current`,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      )) as any;
+      return res?.data || res;
     },
     onSuccess: (data) => {
       setCompareData(data);
@@ -69,8 +77,9 @@ export function ProjectVersionHistory({ projectId, isOwnerOrMaintainer = true }:
 
   const restoreMutation = useMutation({
     mutationFn: async (v1: number) => {
-      const res: any = await api.post(`/api/projects/${projectId}/versions/${v1}/restore`);
-      return res.data || res;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = (await api.post(`/api/projects/${projectId}/versions/${v1}/restore`)) as any;
+      return res?.data || res;
     },
 
     onSuccess: (_, v1) => {
@@ -105,8 +114,10 @@ export function ProjectVersionHistory({ projectId, isOwnerOrMaintainer = true }:
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-xl font-bold tracking-tight">Project Version History</h3>
-          <p className="text-sm text-muted-foreground">Review previous edits, compare field diffs, and restore prior project snapshots.</p>
+          <TypoSection>Project Version History</TypoSection>
+          <TypoCaption as="p">
+            Review previous edits, compare field diffs, and restore prior project snapshots.
+          </TypoCaption>
         </div>
       </div>
 
@@ -115,7 +126,9 @@ export function ProjectVersionHistory({ projectId, isOwnerOrMaintainer = true }:
         <div className="space-y-3 md:col-span-1">
           <Card>
             <CardHeader className="py-3">
-              <CardTitle className="text-sm font-semibold">Version Revisions ({versions.length})</CardTitle>
+              <CardTitle className="text-sm font-semibold">
+                Version Revisions ({versions.length})
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 p-3">
               {versions.map((ver) => (
@@ -134,7 +147,9 @@ export function ProjectVersionHistory({ projectId, isOwnerOrMaintainer = true }:
                       {new Date(ver.created_at).toLocaleDateString()}
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1 truncate">{ver.change_summary || ver.title}</p>
+                  <TypoCaption as="p">
+                    {ver.change_summary || ver.title}
+                  </TypoCaption>
                 </div>
               ))}
             </CardContent>
@@ -150,7 +165,10 @@ export function ProjectVersionHistory({ projectId, isOwnerOrMaintainer = true }:
                   <CardTitle className="text-lg">
                     Comparison: v{compareData.v1_version_number} vs Current
                   </CardTitle>
-                  <CardDescription>Review changed fields between Version {compareData.v1_version_number} and the active project state.</CardDescription>
+                  <CardDescription>
+                    Review changed fields between Version {compareData.v1_version_number} and the
+                    active project state.
+                  </CardDescription>
                 </div>
                 {isOwnerOrMaintainer && (
                   <Button
@@ -158,25 +176,40 @@ export function ProjectVersionHistory({ projectId, isOwnerOrMaintainer = true }:
                     onClick={() => restoreMutation.mutate(compareData.v1_version_number)}
                     disabled={restoreMutation.isPending}
                   >
-                    {restoreMutation.isPending ? "Restoring..." : `Restore v${compareData.v1_version_number}`}
+                    {restoreMutation.isPending
+                      ? "Restoring..."
+                      : `Restore v${compareData.v1_version_number}`}
                   </Button>
                 )}
               </CardHeader>
               <CardContent className="space-y-4">
                 {Object.keys(compareData.diff).length === 0 ? (
-                  <p className="text-sm text-muted-foreground italic">No differences detected between version {compareData.v1_version_number} and current state.</p>
+                  <TypoCaption as="p">
+                    No differences detected between version {compareData.v1_version_number} and
+                    current state.
+                  </TypoCaption>
                 ) : (
                   Object.entries(compareData.diff).map(([field, { old: oldVal, new: newVal }]) => (
                     <div key={field} className="p-3 border rounded-md space-y-2">
-                      <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">{field}</span>
+                      <TypoCaption>
+                        {field}
+                      </TypoCaption>
                       <div className="grid grid-cols-2 gap-4 text-xs">
                         <div className="p-2 bg-red-500/10 rounded border border-red-500/20">
-                          <span className="font-semibold text-red-600 block mb-1">v{compareData.v1_version_number} (Old):</span>
-                          <pre className="whitespace-pre-wrap font-sans">{String(oldVal ?? "None")}</pre>
+                          <span className="font-semibold text-red-600 block mb-1">
+                            v{compareData.v1_version_number} (Old):
+                          </span>
+                          <pre className="whitespace-pre-wrap font-sans">
+                            {String(oldVal ?? "None")}
+                          </pre>
                         </div>
                         <div className="p-2 bg-green-500/10 rounded border border-green-500/20">
-                          <span className="font-semibold text-green-600 block mb-1">Current (New):</span>
-                          <pre className="whitespace-pre-wrap font-sans">{String(newVal ?? "None")}</pre>
+                          <span className="font-semibold text-green-600 block mb-1">
+                            Current (New):
+                          </span>
+                          <pre className="whitespace-pre-wrap font-sans">
+                            {String(newVal ?? "None")}
+                          </pre>
                         </div>
                       </div>
                     </div>
@@ -187,7 +220,8 @@ export function ProjectVersionHistory({ projectId, isOwnerOrMaintainer = true }:
           ) : (
             <Card>
               <CardContent className="p-8 text-center text-muted-foreground">
-                Select a version from the timeline on the left to view diffs and restore previous changes.
+                Select a version from the timeline on the left to view diffs and restore previous
+                changes.
               </CardContent>
             </Card>
           )}

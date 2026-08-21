@@ -1,3 +1,4 @@
+import { TypoCaption } from "@/components/shared/Typography";
 import { Button } from "@/components/ui/button";
 
 interface EmptySearchStateProps {
@@ -64,7 +65,7 @@ export function EmptySearchState({
         <circle cx="35" cy="25" r="3" fill="var(--primary)" opacity="0.15" />
       </svg>
       <p className="text-[14px] font-semibold text-foreground">{title}</p>
-      <p className="mt-1 max-w-xs text-center text-[13px] text-muted-foreground">{description}</p>
+      <TypoCaption as="p">{description}</TypoCaption>
       {onReset && (
         <Button variant="outline" size="sm" className="mt-4" onClick={onReset}>
           {resetLabel}

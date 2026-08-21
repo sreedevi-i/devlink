@@ -1,12 +1,27 @@
-// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
+import {
+  MessageSquare,
+  FolderKanban,
+  Building2,
+  AtSign,
+  ShieldAlert,
+  Megaphone,
+} from "lucide-react";
 
 export const Route = createFileRoute("/_app/settings/notifications")({
   component: NotificationSettingsPage,
@@ -27,7 +42,6 @@ function NotificationSettingsPage() {
     // api.get resolves to the parsed body; there is no `.data` envelope, and
     // unwrapping one meant the form always rendered its defaults instead of
     // the user's saved settings.
-    queryFn: () => api.get<NotificationPreferences>("/api/notifications/preferences"),
     queryFn: async () => {
       const res = await api.get("/api/notifications/preferences");
       return res;
@@ -86,15 +100,46 @@ function NotificationSettingsPage() {
     updateMutation.mutate(newData);
   };
 
-  if (isLoading) return <div className="p-6">Loading notification preferences...</div>;
+  if (isLoading) {
+    return (
+      <div className="space-y-6 max-w-4xl mx-auto p-6">
+        <div>
+          <Skeleton className="h-8 w-64 animate-pulse" />
+          <Skeleton className="mt-2 h-4 w-96 animate-pulse" />
+        </div>
+        <div className="grid gap-6">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-36 animate-pulse" />
+              <Skeleton className="mt-1.5 h-4 w-72 animate-pulse" />
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between border-b border-border/40 pb-4 last:border-0 last:pb-0"
+                >
+                  <div className="space-y-1.5">
+                    <Skeleton className="h-4 w-28 animate-pulse" />
+                    <Skeleton className="h-3 w-48 animate-pulse" />
+                  </div>
+                  <Skeleton className="h-6 w-11 rounded-full animate-pulse" />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto p-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Notification Preferences Center</h2>
-        <p className="text-muted-foreground">
+        <TypoHeading as="h2">Notification Preferences Center</TypoHeading>
+        <TypoCaption as="p">
           Manage your notification channels, category alerts, and email delivery preferences.
-        </p>
+        </TypoCaption>
       </div>
 
       <div className="grid gap-6">
@@ -109,9 +154,9 @@ function NotificationSettingsPage() {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label className="text-base font-semibold">Master Email Notifications</Label>
-                <p className="text-sm text-muted-foreground">
+                <TypoCaption as="p">
                   Master switch to enable or disable all email notifications.
-                </p>
+                </TypoCaption>
               </div>
               <Switch
                 checked={formData.email_enabled}
@@ -122,9 +167,9 @@ function NotificationSettingsPage() {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label className="text-base font-semibold">In-App Notifications</Label>
-                <p className="text-sm text-muted-foreground">
+                <TypoCaption as="p">
                   Store notifications in your notification center tray.
-                </p>
+                </TypoCaption>
               </div>
               <Switch
                 checked={formData.database_enabled}
@@ -135,9 +180,9 @@ function NotificationSettingsPage() {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label className="text-base font-semibold">Real-time Popups (WebSocket)</Label>
-                <p className="text-sm text-muted-foreground">
+                <TypoCaption as="p">
                   Receive instant desktop toast popups while actively using DevLink.
-                </p>
+                </TypoCaption>
               </div>
               <Switch
                 checked={formData.websocket_enabled}
@@ -151,187 +196,298 @@ function NotificationSettingsPage() {
           <CardHeader>
             <CardTitle>Notification Categories</CardTitle>
             <CardDescription>
-              Configure in-app and email preferences for specific notification categories.
+              Preferences are grouped by category so you can quickly find and manage the alerts that
+              matter to you.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Messages */}
-            <div className="flex items-center justify-between pb-4 border-b">
-              <div className="space-y-0.5">
-                <Label className="text-base font-semibold">Messages</Label>
-                <p className="text-sm text-muted-foreground">
-                  Direct messages and active conversation alerts.
-                </p>
-              </div>
-              <div className="flex items-center space-x-6">
-                <div className="flex items-center space-x-2">
-                  <Label className="text-xs text-muted-foreground">In-App</Label>
-                  <Switch
-                    checked={formData.messages}
-                    onCheckedChange={() => handleToggle("messages")}
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Label className="text-xs text-muted-foreground">Email</Label>
-                  <Switch
-                    checked={formData.email_messages}
-                    onCheckedChange={() => handleToggle("email_messages")}
-                    disabled={!formData.email_enabled}
-                  />
-                </div>
-              </div>
-            </div>
+          <CardContent>
+            <Accordion
+              type="multiple"
+              defaultValue={[
+                "messages",
+                "projects",
+                "organizations",
+                "mentions",
+                "security",
+                "marketing",
+              ]}
+              className="w-full"
+            >
+              {/* Messages */}
+              <AccordionItem value="messages">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-3">
+                    <MessageSquare className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <div className="space-y-0.5 text-left">
+                      <div className="text-base font-semibold">Messages</div>
+                      <TypoCaption as="p">
+                        Direct messages and replies in your active conversations.
+                      </TypoCaption>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4 pl-7">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-sm font-medium">New messages</Label>
+                        <TypoCaption as="p">
+                          Get notified when someone sends you a direct message.
+                        </TypoCaption>
+                      </div>
+                      <div className="flex items-center space-x-6">
+                        <div className="flex items-center space-x-2">
+                          <Label className="text-xs text-muted-foreground">In-App</Label>
+                          <Switch
+                            checked={formData.messages}
+                            onCheckedChange={() => handleToggle("messages")}
+                          />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Label className="text-xs text-muted-foreground">Email</Label>
+                          <Switch
+                            checked={formData.email_messages}
+                            onCheckedChange={() => handleToggle("email_messages")}
+                            disabled={!formData.email_enabled}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
 
-            {/* Team Invitations */}
-            <div className="flex items-center justify-between pb-4 border-b">
-              <div className="space-y-0.5">
-                <Label className="text-base font-semibold">Team Invitations</Label>
-                <p className="text-sm text-muted-foreground">
-                  Project invites, team membership, and role changes.
-                </p>
-              </div>
-              <div className="flex items-center space-x-6">
-                <div className="flex items-center space-x-2">
-                  <Label className="text-xs text-muted-foreground">In-App</Label>
-                  <Switch
-                    checked={formData.team_invitations}
-                    onCheckedChange={() => handleToggle("team_invitations")}
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Label className="text-xs text-muted-foreground">Email</Label>
-                  <Switch
-                    checked={formData.email_team_invitations}
-                    onCheckedChange={() => handleToggle("email_team_invitations")}
-                    disabled={!formData.email_enabled}
-                  />
-                </div>
-              </div>
-            </div>
+              {/* Projects */}
+              <AccordionItem value="projects">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-3">
+                    <FolderKanban className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <div className="space-y-0.5 text-left">
+                      <div className="text-base font-semibold">Projects</div>
+                      <TypoCaption as="p">
+                        Milestones, status changes, and repository activity.
+                      </TypoCaption>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4 pl-7">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-sm font-medium">Project updates</Label>
+                        <TypoCaption as="p">
+                          Milestones reached, status changes, and repository activity on your
+                          projects.
+                        </TypoCaption>
+                      </div>
+                      <div className="flex items-center space-x-6">
+                        <div className="flex items-center space-x-2">
+                          <Label className="text-xs text-muted-foreground">In-App</Label>
+                          <Switch
+                            checked={formData.project_updates}
+                            onCheckedChange={() => handleToggle("project_updates")}
+                          />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Label className="text-xs text-muted-foreground">Email</Label>
+                          <Switch
+                            checked={formData.email_project_updates}
+                            onCheckedChange={() => handleToggle("email_project_updates")}
+                            disabled={!formData.email_enabled}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
 
-            {/* Project Updates */}
-            <div className="flex items-center justify-between pb-4 border-b">
-              <div className="space-y-0.5">
-                <Label className="text-base font-semibold">Project Updates</Label>
-                <p className="text-sm text-muted-foreground">
-                  Milestones, project status changes, and repository activity.
-                </p>
-              </div>
-              <div className="flex items-center space-x-6">
-                <div className="flex items-center space-x-2">
-                  <Label className="text-xs text-muted-foreground">In-App</Label>
-                  <Switch
-                    checked={formData.project_updates}
-                    onCheckedChange={() => handleToggle("project_updates")}
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Label className="text-xs text-muted-foreground">Email</Label>
-                  <Switch
-                    checked={formData.email_project_updates}
-                    onCheckedChange={() => handleToggle("email_project_updates")}
-                    disabled={!formData.email_enabled}
-                  />
-                </div>
-              </div>
-            </div>
+              {/* Organizations */}
+              <AccordionItem value="organizations">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-3">
+                    <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <div className="space-y-0.5 text-left">
+                      <div className="text-base font-semibold">Organizations</div>
+                      <TypoCaption as="p">
+                        Team invitations, membership, and role changes.
+                      </TypoCaption>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4 pl-7">
+                    <div className="flex items-center justify-between pb-4 border-b border-border/40">
+                      <div className="space-y-0.5">
+                        <Label className="text-sm font-medium">Team invitations</Label>
+                        <TypoCaption as="p">
+                          When you're invited to join a team or project.
+                        </TypoCaption>
+                      </div>
+                      <div className="flex items-center space-x-6">
+                        <div className="flex items-center space-x-2">
+                          <Label className="text-xs text-muted-foreground">In-App</Label>
+                          <Switch
+                            checked={formData.team_invitations}
+                            onCheckedChange={() => handleToggle("team_invitations")}
+                          />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Label className="text-xs text-muted-foreground">Email</Label>
+                          <Switch
+                            checked={formData.email_team_invitations}
+                            onCheckedChange={() => handleToggle("email_team_invitations")}
+                            disabled={!formData.email_enabled}
+                          />
+                        </div>
+                      </div>
+                    </div>
 
-            {/* Mentions */}
-            <div className="flex items-center justify-between pb-4 border-b">
-              <div className="space-y-0.5">
-                <Label className="text-base font-semibold">Mentions</Label>
-                <p className="text-sm text-muted-foreground">
-                  When developers tag or mention @username in issues or discussions.
-                </p>
-              </div>
-              <div className="flex items-center space-x-6">
-                <div className="flex items-center space-x-2">
-                  <Label className="text-xs text-muted-foreground">In-App</Label>
-                  <Switch
-                    checked={formData.mentions}
-                    onCheckedChange={() => handleToggle("mentions")}
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Label className="text-xs text-muted-foreground">Email</Label>
-                  <Switch
-                    checked={formData.email_mentions}
-                    onCheckedChange={() => handleToggle("email_mentions")}
-                    disabled={!formData.email_enabled}
-                  />
-                </div>
-              </div>
-            </div>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-sm font-medium">Role changes</Label>
+                        <TypoCaption as="p">
+                          When your permissions or role within an organization are updated.
+                        </TypoCaption>
+                      </div>
+                      <Switch
+                        checked={formData.role_changes}
+                        onCheckedChange={() => handleToggle("role_changes")}
+                      />
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
 
-            {/* System Announcements */}
-            <div className="flex items-center justify-between pb-4 border-b">
-              <div className="space-y-0.5">
-                <Label className="text-base font-semibold">System Announcements</Label>
-                <p className="text-sm text-muted-foreground">
-                  Platform updates, scheduled maintenance, and system alerts.
-                </p>
-              </div>
-              <div className="flex items-center space-x-6">
-                <div className="flex items-center space-x-2">
-                  <Label className="text-xs text-muted-foreground">In-App</Label>
-                  <Switch
-                    checked={formData.system_announcements}
-                    onCheckedChange={() => handleToggle("system_announcements")}
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Label className="text-xs text-muted-foreground">Email</Label>
-                  <Switch
-                    checked={formData.email_system_announcements}
-                    onCheckedChange={() => handleToggle("email_system_announcements")}
-                    disabled={!formData.email_enabled}
-                  />
-                </div>
-              </div>
-            </div>
+              {/* Mentions */}
+              <AccordionItem value="mentions">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-3">
+                    <AtSign className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <div className="space-y-0.5 text-left">
+                      <div className="text-base font-semibold">Mentions</div>
+                      <TypoCaption as="p">When someone tags or mentions you directly.</TypoCaption>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4 pl-7">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-sm font-medium">@mentions</Label>
+                        <TypoCaption as="p">
+                          When developers tag or mention @username in issues or discussions.
+                        </TypoCaption>
+                      </div>
+                      <div className="flex items-center space-x-6">
+                        <div className="flex items-center space-x-2">
+                          <Label className="text-xs text-muted-foreground">In-App</Label>
+                          <Switch
+                            checked={formData.mentions}
+                            onCheckedChange={() => handleToggle("mentions")}
+                          />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Label className="text-xs text-muted-foreground">Email</Label>
+                          <Switch
+                            checked={formData.email_mentions}
+                            onCheckedChange={() => handleToggle("email_mentions")}
+                            disabled={!formData.email_enabled}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
 
-            {/* Role Changes */}
-            <div className="flex items-center justify-between pb-4 border-b">
-              <div className="space-y-0.5">
-                <Label className="text-base font-semibold">Role Changes</Label>
-                <p className="text-sm text-muted-foreground">
-                  When your permissions or roles are modified.
-                </p>
-              </div>
-              <Switch
-                checked={formData.role_changes}
-                onCheckedChange={() => handleToggle("role_changes")}
-              />
-            </div>
+              {/* Security */}
+              <AccordionItem value="security">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-3">
+                    <ShieldAlert className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <div className="space-y-0.5 text-left">
+                      <div className="text-base font-semibold">Security</div>
+                      <TypoCaption as="p">
+                        Platform announcements and critical account alerts.
+                      </TypoCaption>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4 pl-7">
+                    <div className="flex items-center justify-between pb-4 border-b border-border/40">
+                      <div className="space-y-0.5">
+                        <Label className="text-sm font-medium">System announcements</Label>
+                        <TypoCaption as="p">
+                          Platform updates and scheduled maintenance windows.
+                        </TypoCaption>
+                      </div>
+                      <div className="flex items-center space-x-6">
+                        <div className="flex items-center space-x-2">
+                          <Label className="text-xs text-muted-foreground">In-App</Label>
+                          <Switch
+                            checked={formData.system_announcements}
+                            onCheckedChange={() => handleToggle("system_announcements")}
+                          />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Label className="text-xs text-muted-foreground">Email</Label>
+                          <Switch
+                            checked={formData.email_system_announcements}
+                            onCheckedChange={() => handleToggle("email_system_announcements")}
+                            disabled={!formData.email_enabled}
+                          />
+                        </div>
+                      </div>
+                    </div>
 
-            {/* System Alerts */}
-            <div className="flex items-center justify-between pb-4 border-b">
-              <div className="space-y-0.5">
-                <Label className="text-base font-semibold">System Alerts</Label>
-                <p className="text-sm text-muted-foreground">
-                  Critical security and system notifications.
-                </p>
-              </div>
-              <Switch
-                checked={formData.system_alerts}
-                onCheckedChange={() => handleToggle("system_alerts")}
-                disabled={true}
-              />
-            </div>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-sm font-medium">Security alerts</Label>
+                        <TypoCaption as="p">
+                          Critical security notifications about your account. Always on.
+                        </TypoCaption>
+                      </div>
+                      <Switch
+                        checked={formData.system_alerts}
+                        onCheckedChange={() => handleToggle("system_alerts")}
+                        disabled={true}
+                      />
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
 
-            {/* Marketing & News */}
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label className="text-base font-semibold">Marketing & News</Label>
-                <p className="text-sm text-muted-foreground">
-                  Occasional updates about DevLink features.
-                </p>
-              </div>
-              <Switch
-                checked={formData.marketing_emails}
-                onCheckedChange={() => handleToggle("marketing_emails")}
-              />
-            </div>
+              {/* Marketing */}
+              <AccordionItem value="marketing" className="border-b-0">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-3">
+                    <Megaphone className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <div className="space-y-0.5 text-left">
+                      <div className="text-base font-semibold">Marketing</div>
+                      <TypoCaption as="p">Product news and promotional emails.</TypoCaption>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4 pl-7">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-sm font-medium">Marketing & news</Label>
+                        <TypoCaption as="p">
+                          Occasional updates about new DevLink features and tips.
+                        </TypoCaption>
+                      </div>
+                      <Switch
+                        checked={formData.marketing_emails}
+                        onCheckedChange={() => handleToggle("marketing_emails")}
+                      />
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </CardContent>
         </Card>
       </div>

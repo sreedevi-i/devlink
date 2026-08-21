@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { FolderPlus, Check } from "lucide-react";
 import { useBookmarkCollections } from "@/hooks/useBookmarkCollections";
 import type { BookmarkCollection } from "@/api";
+import { TypoCaption } from "@/components/shared/Typography";
 
 export function AddToCollectionMenu({
   bookmarkId,
@@ -50,7 +51,7 @@ export function AddToCollectionMenu({
             }}
           >
             <span className="flex-1 truncate text-[13px]">{col.name}</span>
-            <span className="ml-2 text-[11px] text-muted-foreground">{col.bookmark_count}</span>
+            <TypoCaption>{col.bookmark_count}</TypoCaption>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
@@ -66,7 +67,7 @@ export function BookmarkCollectionIndicator({ bookmarkId }: { bookmarkId: string
   return (
     <div className="flex items-center gap-1" aria-label="In collections">
       <Check size={12} className="text-primary" />
-      <span className="text-[11px] text-muted-foreground">{bookmarkCollections.length}</span>
+      <TypoCaption>{bookmarkCollections.length}</TypoCaption>
     </div>
   );
 }

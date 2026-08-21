@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import api from "@/lib/api";
 import { ApiError } from "@/api/client";
-import { ApiError } from "@/api";
+import { TypoHeading } from "@/components/shared/Typography";
 
 export const Route = createFileRoute("/maintenance")({
   component: MaintenancePage,
@@ -37,38 +37,17 @@ function MaintenancePage() {
   useEffect(() => {
     const checkMaintenance = async () => {
       try {
-        // The API client returns the parsed body directly; there is no
-        // axios-style `.data` wrapper around it.
         setMaintenance(await api.get<MaintenanceWindow>("/api/maintenance/active"));
       } catch (error) {
         if (!(error instanceof ApiError)) return;
 
-        // 404 means there is no active window, so the user landed here by
-        // accident (or the window ended while the page was open).
         if (error.status === 404) {
           window.location.href = "/";
           return;
         }
 
-        // 503 is the maintenance middleware itself answering, and it includes
-        // the window we were trying to fetch.
         if (error.status === 503) {
           setMaintenance(maintenanceFromErrorPayload(error.payload));
-        const res = await api.get<any>("/api/maintenance/active");
-        setMaintenance(res.data || res);
-      } catch (e: any) {
-
-        // If 404, there is no active maintenance. We could redirect to home.
-        const status = e instanceof ApiError ? e.status : undefined;
-        if (status === 404) {
-          window.location.href = "/";
-        } else if (status === 503) {
-          // The middleware caught it and returned 503 with data
-          const payload =
-            e instanceof ApiError
-              ? (e.payload as { maintenance?: { message: string; end_time: string } } | null)
-              : null;
-          if (payload?.maintenance) setMaintenance(payload.maintenance);
         }
       }
     };
@@ -102,7 +81,7 @@ function MaintenancePage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="bg-white shadow-lg rounded-lg p-8 max-w-md w-full text-center">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">Under Maintenance</h1>
+        <TypoHeading as="h1">Under Maintenance</TypoHeading>
         <p className="text-gray-600 mb-6">
           {maintenance?.message ||
             "The system is currently undergoing scheduled maintenance. Please check back later."}

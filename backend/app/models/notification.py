@@ -248,6 +248,16 @@ class Notification(Base):
         index=True,
     )
 
+    delivered_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        index=True,
+    )
+
+    clicked_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        index=True,
+    )
+
     sent_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True),
     )

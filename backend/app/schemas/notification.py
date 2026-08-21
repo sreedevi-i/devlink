@@ -64,6 +64,8 @@ class NotificationResponse(NotificationBase):
 
     is_read: bool
     read_at: Optional[datetime] = None
+    delivered_at: Optional[datetime] = None
+    clicked_at: Optional[datetime] = None
 
     created_at: datetime
     updated_at: datetime

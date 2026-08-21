@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { Loader2, Link as LinkIcon } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { TypoCaption } from "@/components/shared/Typography";
 
 export function ApplyButton({
   flareId,
@@ -121,9 +122,9 @@ export function ApplyButton({
             {message.trim().length === 0 &&
               portfolioUrl.trim().length === 0 &&
               githubUrl.trim().length === 0 && (
-                <p className="text-[11px] text-muted-foreground">
+                <TypoCaption as="p">
                   Tip: add a message or links to improve your chances.
-                </p>
+                </TypoCaption>
               )}
           </div>
         </Card>

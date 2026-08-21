@@ -18,6 +18,7 @@ import {
 } from "@/hooks/useBookmarkCollections";
 import type { BookmarkCollection } from "@/api";
 import { ProjectDifficultyBadge } from "@/components/project/ProjectDifficultyBadge";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export const Route = createFileRoute("/_app/bookmarks")({
   head: () => ({
@@ -123,12 +124,12 @@ function BookmarksPage() {
       <div className="min-w-0 flex-1 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-[22px] font-bold tracking-tight text-foreground">Bookmarks</h1>
-            <p className="text-[13px] text-muted-foreground">
+            <TypoHeading as="h1">Bookmarks</TypoHeading>
+            <TypoCaption as="p">
               {activeCollectionId
                 ? "Filtered by collection"
                 : "Projects, developers, and flares you've saved."}
-            </p>
+            </TypoCaption>
           </div>
           <Button
             variant="outline"
@@ -144,15 +145,15 @@ function BookmarksPage() {
         {/* SAVED DEVELOPERS / BUILDERS SECTION */}
         <section>
           <div className="mb-2 flex items-center justify-between">
-            <p className="text-[12px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+            <TypoCaption as="p">
               <Users size={14} /> Saved Developers
-            </p>
+            </TypoCaption>
           </div>
           {bookmarkedDevs.length === 0 ? (
             <Card className="p-6 text-center border-dashed">
-              <p className="text-[13px] text-muted-foreground">
+              <TypoCaption as="p">
                 No developers bookmarked yet. Save builders from their profiles to see them here!
-              </p>
+              </TypoCaption>
             </Card>
           ) : (
             <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -168,7 +169,7 @@ function BookmarksPage() {
                         />
                         <div>
                           <p className="text-[14px] font-semibold text-foreground">{dev.name}</p>
-                          <p className="text-[12px] text-muted-foreground">{dev.role}</p>
+                          <TypoCaption as="p">{dev.role}</TypoCaption>
                         </div>
                       </div>
                       <button
@@ -220,9 +221,9 @@ function BookmarksPage() {
         {/* PROJECTS SECTION */}
         <section>
           <div className="mb-2 flex items-center justify-between">
-            <p className="text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <TypoCaption as="p">
               Projects
-            </p>
+            </TypoCaption>
           </div>
           {bookmarkedProjects.length === 0 ? (
             <EmptyState
@@ -246,9 +247,9 @@ function BookmarksPage() {
                             </p>
                             {p.difficulty && <ProjectDifficultyBadge difficulty={p.difficulty} />}
                           </div>
-                          <p className="mt-0.5 text-[12px] text-muted-foreground line-clamp-2">
+                          <TypoCaption as="p">
                             {p.description}
-                          </p>
+                          </TypoCaption>
                         </div>
 
                         <Bookmark size={14} className="text-primary fill-primary" />
@@ -277,9 +278,9 @@ function BookmarksPage() {
 
         {/* FLARES SECTION */}
         <section>
-          <p className="mb-2 text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <TypoCaption as="p">
             Flares
-          </p>
+          </TypoCaption>
           <div className="space-y-2">
             {flares.slice(0, 2).map((f) => (
               <Card key={f.id} className="p-4">

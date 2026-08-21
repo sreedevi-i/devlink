@@ -7,16 +7,15 @@ from fastapi.responses import PlainTextResponse
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
-from app.dependencies import get_current_admin
+from app.dependencies import get_current_admin, get_current_user, get_optional_current_user
 from app.models.user import User
 from app.schemas.analytics import PlatformAnalyticsResponse
 from app.schemas.community_stats import CommunityStatsResponse
 from app.services.analytics_service import AnalyticsService
 from app.services.community_stats_service import CommunityStatsService
-from app.schemas.analytics import PlatformAnalyticsResponse
 from app.schemas.request_analytics import RequestAnalyticsResponse
-from app.services.analytics_service import AnalyticsService
 from app.services.request_analytics_service import RequestAnalyticsService
+from app.schemas.profile_analytics import ProfileAnalyticsResponse, TrackClickRequest
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
@@ -147,3 +146,36 @@ def export_request_analytics(
             "Content-Disposition": f'attachment; filename="request-analytics-{days}d.csv"'
         },
     )
+
+
+@router.get(
+    "/profile",
+    response_model=ProfileAnalyticsResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get professional profile analytics dashboard data",
+)
+def get_my_profile_analytics(
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> ProfileAnalyticsResponse:
+    return AnalyticsService.get_profile_analytics(db=db, user_id=current_user.id)
+
+
+@router.post(
+    "/profile/click",
+    status_code=status.HTTP_200_OK,
+    summary="Track a user click (repository or project)",
+)
+def track_profile_click(
+    request: TrackClickRequest,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[Optional[User], Depends(get_optional_current_user)] = None,
+):
+    AnalyticsService.log_profile_click(
+        db=db,
+        click_type=request.click_type,
+        target_user_id=request.target_user_id,
+        entity_id=request.entity_id,
+        user_id=current_user.id if current_user else None,
+    )
+    return {"status": "success"}

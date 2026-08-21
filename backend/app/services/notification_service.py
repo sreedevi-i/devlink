@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from app.utils.time import utcnow
 
 # pyrefly: ignore [missing-import]
 from sqlalchemy import func, select
@@ -153,7 +153,7 @@ class NotificationService:
     ) -> Notification:
 
         db_notification.is_read = True
-        db_notification.read_at = datetime.utcnow()
+        db_notification.read_at = utcnow()
 
         db.flush()
         db.refresh(db_notification)
@@ -175,7 +175,7 @@ class NotificationService:
 
         for notification in notifications:
             notification.is_read = True
-            notification.read_at = datetime.utcnow()
+            notification.read_at = utcnow()
 
         db.flush()
 
@@ -204,6 +204,69 @@ class NotificationService:
 
         db.delete(db_notification)
         db.flush()
+
+    @staticmethod
+    def track_click(
+        db: Session,
+        db_notification: Notification,
+    ) -> Notification:
+        db_notification.clicked_at = utcnow()
+        if not db_notification.is_read:
+            db_notification.is_read = True
+            db_notification.read_at = utcnow()
+        db.flush()
+        db.refresh(db_notification)
+        return db_notification
+
+    @staticmethod
+    def track_delivered(
+        db: Session,
+        db_notification: Notification,
+    ) -> Notification:
+        db_notification.delivered_at = utcnow()
+        from app.models.notification import NotificationStatus
+        db_notification.status = NotificationStatus.SENT
+        db.flush()
+        db.refresh(db_notification)
+        return db_notification
+
+    @staticmethod
+    def get_delivery_analytics(db: Session) -> dict:
+        total_sent = db.scalar(
+            select(func.count(Notification.id)).where(Notification.sent_at.isnot(None))
+        ) or 0
+        total_delivered = db.scalar(
+            select(func.count(Notification.id)).where(Notification.delivered_at.isnot(None))
+        ) or 0
+        total_read = db.scalar(
+            select(func.count(Notification.id)).where(Notification.read_at.isnot(None))
+        ) or 0
+        total_clicked = db.scalar(
+            select(func.count(Notification.id)).where(Notification.clicked_at.isnot(None))
+        ) or 0
+        from app.models.notification import NotificationStatus
+        total_failed = db.scalar(
+            select(func.count(Notification.id)).where(Notification.status == NotificationStatus.FAILED)
+        ) or 0
+
+        delivery_rate = (total_delivered / total_sent * 100) if total_sent > 0 else 0.0
+        read_rate = (total_read / total_delivered * 100) if total_delivered > 0 else 0.0
+        click_rate = (total_clicked / total_read * 100) if total_read > 0 else 0.0
+
+        return {
+            "metrics": {
+                "sent": total_sent,
+                "delivered": total_delivered,
+                "read": total_read,
+                "clicked": total_clicked,
+                "failed": total_failed,
+            },
+            "rates": {
+                "delivery_rate_pct": round(delivery_rate, 2),
+                "read_rate_pct": round(read_rate, 2),
+                "click_rate_pct": round(click_rate, 2),
+            },
+        }
 
     @staticmethod
     def enqueue(
@@ -248,7 +311,7 @@ class NotificationService:
             select(NotificationPreference).where(NotificationPreference.user_id == user_id)
         )
         if not pref:
-            now = datetime.now(timezone.utc)
+            now = utcnow()
             pref = NotificationPreference(
                 id=uuid.uuid4(),
                 user_id=user_id,
@@ -290,7 +353,7 @@ class NotificationService:
             if hasattr(pref, key) and value is not None:
                 setattr(pref, key, value)
 
-        pref.updated_at = datetime.now(timezone.utc)
+        pref.updated_at = utcnow()
         db.add(pref)
         db.commit()
         db.refresh(pref)

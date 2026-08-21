@@ -5,6 +5,7 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { SidebarProvider } from "@/context/SidebarContext";
 import { ProfileCompletionChecklist } from "@/components/profile/ProfileCompletionChecklist";
 import { EmailVerificationBanner } from "@/components/auth/EmailVerificationBanner";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 const mockUserProfile = {
   avatar: "",
@@ -56,10 +57,10 @@ function AppNotFound() {
           className="mx-auto w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 bg-background [&_svg]:bg-transparent"
         />
 
-        <h1 className="mt-6 text-2xl font-bold text-foreground sm:text-3xl">Page not found</h1>
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+        <TypoHeading as="h1">Page not found</TypoHeading>
+        <TypoCaption as="p">
           The page you're looking for doesn't exist or has been moved to a new address.
-        </p>
+        </TypoCaption>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
             to="/"

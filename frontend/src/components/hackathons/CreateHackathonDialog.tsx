@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { hackathonsService } from "@/services";
 import type { Hackathon } from "@/services";
+import { TypoCaption } from "@/components/shared/Typography";
 
 interface Props {
   open: boolean;
@@ -169,7 +170,7 @@ export function CreateHackathonDialog({ open, onOpenChange }: Props) {
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <label className="mb-1.5 block text-[13px] font-medium text-foreground">
-                Theme <span className="font-normal text-muted-foreground">(optional)</span>
+                Theme <TypoCaption>(optional)</TypoCaption>
               </label>
               <input
                 value={form.theme}
@@ -181,7 +182,7 @@ export function CreateHackathonDialog({ open, onOpenChange }: Props) {
             </div>
             <div>
               <label className="mb-1.5 block text-[13px] font-medium text-foreground">
-                Prize <span className="font-normal text-muted-foreground">(optional)</span>
+                Prize <TypoCaption>(optional)</TypoCaption>
               </label>
               <input
                 value={form.prize}
@@ -264,7 +265,7 @@ export function CreateHackathonDialog({ open, onOpenChange }: Props) {
           {/* Website */}
           <div>
             <label className="mb-1.5 block text-[13px] font-medium text-foreground">
-              Website URL <span className="font-normal text-muted-foreground">(optional)</span>
+              Website URL <TypoCaption>(optional)</TypoCaption>
             </label>
             <input
               value={form.website_url}

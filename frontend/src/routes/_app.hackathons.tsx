@@ -1,11 +1,13 @@
 import { createFileRoute, Outlet, useRouterState, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { hackathonsService } from "@/services";
-import { Card, TagChip } from "@/components/shared/primitives";
+import { Card, TagChip, Skeleton } from "@/components/shared/primitives";
 import { Trophy, Users2, Clock, Plus } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CreateHackathonDialog } from "@/components/hackathons/CreateHackathonDialog";
 import { cn } from "@/lib/utils";
+import { z } from "zod";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export const Route = createFileRoute("/_app/hackathons")({
   head: () => ({
@@ -14,12 +16,32 @@ export const Route = createFileRoute("/_app/hackathons")({
       { name: "description", content: "Discover hackathons, form teams and ship in a weekend." },
     ],
   }),
+  validateSearch: z.object({
+    create: z.boolean().optional(),
+  }),
   component: HackathonsPage,
 });
 
 function HackathonsPage() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const navigate = Route.useNavigate();
+  const search = Route.useSearch();
   const [createOpen, setCreateOpen] = useState(false);
+
+  useEffect(() => {
+    if (search.create) {
+      setCreateOpen(true);
+      // Remove query param to keep the URL clean
+      navigate({
+        search: (prev) => {
+          const next = { ...prev };
+          delete next.create;
+          return next;
+        },
+        replace: true,
+      });
+    }
+  }, [search.create]);
 
   const { data = [], isLoading } = useQuery({
     queryKey: ["hackathons"],
@@ -37,10 +59,10 @@ function HackathonsPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[22px] font-bold tracking-tight text-foreground">Hackathons</h1>
-          <p className="text-[13px] text-muted-foreground">
+          <TypoHeading as="h1">Hackathons</TypoHeading>
+          <TypoCaption as="p">
             Join a jam, build a team, ship something new.
-          </p>
+          </TypoCaption>
         </div>
         <button
           onClick={() => setCreateOpen(true)}
@@ -54,7 +76,25 @@ function HackathonsPage() {
       {isLoading ? (
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i} className="h-40 animate-pulse" />
+            <Card key={i} className="p-4 flex flex-col justify-between h-[150px]">
+              <div>
+                <div className="flex items-start gap-3">
+                  <Skeleton className="h-10 w-10 shrink-0 rounded-md animate-pulse" />
+                  <div className="min-w-0 flex-1 space-y-1.5 pt-0.5">
+                    <Skeleton className="h-4 w-2/3 animate-pulse" />
+                    <Skeleton className="h-3 w-5/6 animate-pulse" />
+                  </div>
+                </div>
+                <div className="mt-3 flex gap-1">
+                  <Skeleton className="h-5 w-14 rounded-full animate-pulse" />
+                  <Skeleton className="h-5 w-16 rounded-full animate-pulse" />
+                </div>
+              </div>
+              <div className="mt-3 flex items-center justify-between">
+                <Skeleton className="h-3.5 w-24 animate-pulse" />
+                <Skeleton className="h-3.5 w-28 animate-pulse" />
+              </div>
+            </Card>
           ))}
         </div>
       ) : data.length === 0 ? (
@@ -63,7 +103,7 @@ function HackathonsPage() {
             🏆
           </div>
           <p className="text-[14px] font-semibold text-foreground">No hackathons yet</p>
-          <p className="mt-1 text-[13px] text-muted-foreground">Be the first to create one.</p>
+          <TypoCaption as="p">Be the first to create one.</TypoCaption>
           <button
             onClick={() => setCreateOpen(true)}
             className="mt-3 text-[13px] font-medium text-primary hover:underline"
@@ -87,9 +127,9 @@ function HackathonsPage() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[14px] font-semibold text-foreground">{h.name}</p>
-                    <p className="mt-0.5 line-clamp-2 text-[12px] text-muted-foreground">
+                    <TypoCaption as="p">
                       {h.description}
-                    </p>
+                    </TypoCaption>
                   </div>
                 </div>
                 <div className="mt-3 flex flex-wrap gap-1">

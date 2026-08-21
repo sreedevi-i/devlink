@@ -6,6 +6,7 @@ import { SubmitProjectDialog } from "./SubmitProjectDialog";
 import { hackathonsService } from "@/services";
 import type { HackathonSubmission, HackathonTeam } from "@/services";
 import { cn } from "@/lib/utils";
+import { TypoSection, TypoCaption } from "@/components/shared/Typography";
 
 interface Props {
   hackathonId: string;
@@ -71,11 +72,11 @@ export function SubmissionsTab({ hackathonId, teams }: Props) {
     <div className="space-y-3">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <p className="text-[13px] text-muted-foreground">
+        <TypoCaption as="p">
           {submissions.length === 0
             ? "No submissions yet."
             : `${submissions.length} submission${submissions.length !== 1 ? "s" : ""}`}
-        </p>
+        </TypoCaption>
         {teams.length > 0 && (
           <button
             onClick={() => setSubmitOpen(true)}
@@ -146,12 +147,12 @@ function SubmissionCard({
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-[14px] font-semibold text-foreground">{submission.title}</h3>
+            <TypoSection>{submission.title}</TypoSection>
             <TagChip className={cn("inline-flex items-center gap-1", meta.cls)}>
               {meta.icon} {meta.label}
             </TagChip>
           </div>
-          {team && <p className="mt-0.5 text-[12px] text-muted-foreground">by {team.name}</p>}
+          {team && <TypoCaption as="p">by {team.name}</TypoCaption>}
           <p className="mt-1.5 line-clamp-3 text-[13px] text-foreground/80">
             {submission.description}
           </p>

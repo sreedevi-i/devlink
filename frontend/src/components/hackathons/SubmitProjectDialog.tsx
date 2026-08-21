@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import type { HackathonTeam } from "@/services";
 import { hackathonsService } from "@/services";
+import { TypoCaption } from "@/components/shared/Typography";
 
 interface Props {
   hackathonId: string;
@@ -187,7 +188,7 @@ export function SubmitProjectDialog({
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <label className="mb-1.5 block text-[13px] font-medium text-foreground">
-                Repository URL <span className="font-normal text-muted-foreground">(optional)</span>
+                Repository URL <TypoCaption>(optional)</TypoCaption>
               </label>
               <input
                 value={repoUrl}
@@ -204,7 +205,7 @@ export function SubmitProjectDialog({
             </div>
             <div>
               <label className="mb-1.5 block text-[13px] font-medium text-foreground">
-                Demo URL <span className="font-normal text-muted-foreground">(optional)</span>
+                Demo URL <TypoCaption>(optional)</TypoCaption>
               </label>
               <input
                 value={demoUrl}

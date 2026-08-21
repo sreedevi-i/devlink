@@ -11,6 +11,7 @@ import { TeamsTab } from "@/components/hackathons/TeamsTab";
 import { SubmissionsTab } from "@/components/hackathons/SubmissionsTab";
 import { LeaderboardTab } from "@/components/hackathons/LeaderboardTab";
 import { cn } from "@/lib/utils";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 type Tab = "overview" | "teams" | "submissions" | "leaderboard";
 
@@ -111,7 +112,7 @@ function HackathonDetail() {
           </span>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <h1 className="text-[22px] font-bold text-foreground">{hackathon.name}</h1>
+              <TypoHeading as="h1">{hackathon.name}</TypoHeading>
               <TagChip
                 className={cn(
                   hackathon.status === "registration_open"
@@ -129,7 +130,7 @@ function HackathonDetail() {
               </TagChip>
             </div>
             {hackathon.theme && (
-              <p className="mt-0.5 text-[13px] text-muted-foreground">{hackathon.theme}</p>
+              <TypoCaption as="p">{hackathon.theme}</TypoCaption>
             )}
             <p className="mt-2 text-[13px] text-foreground line-clamp-3">{hackathon.description}</p>
             <div className="mt-3 flex flex-wrap gap-3 text-[12px] text-muted-foreground">
@@ -211,9 +212,9 @@ function HackathonDetail() {
         <TabsContent value="overview">
           <Card className="p-4">
             <p className="text-[13px] font-semibold text-foreground">About</p>
-            <p className="mt-2 text-[13px] text-muted-foreground whitespace-pre-wrap">
+            <TypoCaption as="p">
               {hackathon.description}
-            </p>
+            </TypoCaption>
           </Card>
           {hackathon.website_url && (
             <Card className="mt-3 p-4">

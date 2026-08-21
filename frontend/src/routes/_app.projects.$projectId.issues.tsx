@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { issuesService } from "@/services";
@@ -22,6 +20,7 @@ import {
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { TypoSection, TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export const Route = createFileRoute("/_app/projects/$projectId/issues")({
   head: () => ({
@@ -84,10 +83,10 @@ function IssuesPage() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[22px] font-bold tracking-tight text-foreground">Issues</h1>
-          <p className="text-[13px] text-muted-foreground">
+          <TypoHeading as="h1">Issues</TypoHeading>
+          <TypoCaption as="p">
             Track bugs, feature requests, and tasks with AI-powered duplicate detection.
-          </p>
+          </TypoCaption>
         </div>
         <div className="flex gap-2">
           <button
@@ -152,9 +151,9 @@ function IssuesPage() {
             <FileText size={20} />
           </div>
           <p className="text-[14px] font-semibold text-foreground">No issues found</p>
-          <p className="mt-1 text-[13px] text-muted-foreground">
+          <TypoCaption as="p">
             {searchQuery ? "Try adjusting your search." : "Create your first issue to get started."}
-          </p>
+          </TypoCaption>
         </div>
       ) : (
         <div className="space-y-2">
@@ -171,9 +170,9 @@ function IssuesPage() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-[14px] font-semibold text-foreground truncate">
+                      <TypoSection>
                         {issue.title}
-                      </h3>
+                      </TypoSection>
                       <span
                         className={cn(
                           "rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase",
@@ -184,9 +183,9 @@ function IssuesPage() {
                         {statusConfig.label}
                       </span>
                     </div>
-                    <p className="mt-1 line-clamp-2 text-[12px] text-muted-foreground">
+                    <TypoCaption as="p">
                       {issue.description}
-                    </p>
+                    </TypoCaption>
                     <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
                       <span className={cn("font-medium", priorityConfig.color)}>
                         {priorityConfig.label} Priority
@@ -262,14 +261,14 @@ function DuplicateCheckModal({ projectId, onClose }: { projectId: string; onClos
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <Card className="w-full max-w-lg p-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-[16px] font-bold text-foreground">Check for Duplicates</h2>
+          <TypoHeading as="h2">Check for Duplicates</TypoHeading>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
             <X size={18} />
           </button>
         </div>
-        <p className="mt-1 text-[13px] text-muted-foreground">
+        <TypoCaption as="p">
           Use AI to detect similar issues before creating a new one.
-        </p>
+        </TypoCaption>
 
         <div className="mt-4 space-y-3">
           <div>
@@ -426,7 +425,7 @@ function CreateIssueModal({ projectId, onClose }: { projectId: string; onClose: 
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <Card className="w-full max-w-lg p-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-[16px] font-bold text-foreground">Create Issue</h2>
+          <TypoHeading as="h2">Create Issue</TypoHeading>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
             <X size={18} />
           </button>

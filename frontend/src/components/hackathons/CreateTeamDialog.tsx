@@ -10,6 +10,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { hackathonsService } from "@/services";
+import { TypoCaption } from "@/components/shared/Typography";
 
 interface Props {
   hackathonId: string;
@@ -104,7 +105,7 @@ export function CreateTeamDialog({ hackathonId, open, onOpenChange, onCreated }:
               htmlFor="team-desc"
               className="mb-1.5 block text-[13px] font-medium text-foreground"
             >
-              Description <span className="font-normal text-muted-foreground">(optional)</span>
+              Description <TypoCaption>(optional)</TypoCaption>
             </label>
             <textarea
               id="team-desc"

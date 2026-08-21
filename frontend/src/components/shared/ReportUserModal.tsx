@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { usersApi } from "@/api/modules/users";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export interface ReportUserModalProps {
   isOpen: boolean;
@@ -41,10 +42,10 @@ export function ReportUserModal({ isOpen, onClose, userId, username }: ReportUse
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-lg">
-        <h2 className="text-lg font-semibold mb-2">Report @{username}</h2>
-        <p className="text-sm text-muted-foreground mb-4">
+        <TypoHeading as="h2">Report @{username}</TypoHeading>
+        <TypoCaption as="p">
           Please select a reason for reporting this user. Our team will review the report.
-        </p>
+        </TypoCaption>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>

@@ -6,17 +6,20 @@ import { TopNavbar } from "./TopNavbar";
 import { RightPanel } from "./RightPanel";
 import { BottomNavigation } from "./BottomNavigation";
 import { FAB } from "./FAB";
+import { AnnouncementBanner } from "@/components/shared/AnnouncementBanner";
 import { SectionErrorBoundary } from "@/components/errors/SectionErrorBoundary";
+import { cn } from "@/lib/utils";
 
 export function DashboardLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isDashboard = pathname.endsWith("/dashboard") || pathname === "/";
 
   return (
     <div
-      className="grid h-screen w-full bg-background overflow-hidden
-      grid-cols-1 
-      md:grid-cols-[max-content_1fr] 
-      xl:grid-cols-[max-content_1fr_max-content]"
+      className={cn(
+        "grid h-screen w-full bg-background overflow-hidden grid-cols-1 md:grid-cols-[max-content_1fr]",
+        isDashboard ? "" : "xl:grid-cols-[max-content_1fr_max-content]",
+      )}
     >
       {/* ─── Desktop & Tablet Sidebar ─────────────────────────────── */}
       <Sidebar />
@@ -26,6 +29,7 @@ export function DashboardLayout() {
 
       {/* ─── Main content column ──────────────────────────────────── */}
       <div className="flex min-w-0 flex-col relative h-screen overflow-hidden">
+        <AnnouncementBanner />
         <TopNavbar />
 
         <main
@@ -50,7 +54,7 @@ export function DashboardLayout() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.18, ease: "easeOut" }}
-              className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6"
+              className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8"
             >
               <SectionErrorBoundary sectionName="Page View">
                 <Outlet />
@@ -61,9 +65,11 @@ export function DashboardLayout() {
       </div>
 
       {/* ─── Desktop Right Activity Panel ─────────────────────────── */}
-      <SectionErrorBoundary sectionName="Right Activity Panel">
-        <RightPanel />
-      </SectionErrorBoundary>
+      {!isDashboard && (
+        <SectionErrorBoundary sectionName="Right Activity Panel">
+          <RightPanel />
+        </SectionErrorBoundary>
+      )}
 
       {/* ─── Mobile-only: Bottom Navigation & FAB ─────────────────── */}
       <BottomNavigation />

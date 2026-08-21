@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Download, Search, Filter, ShieldAlert, Calendar, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import { TypoHeading } from "@/components/shared/Typography";
 
 interface AuditLogItem {
   id: string;
@@ -129,9 +130,9 @@ export const OrganizationAuditLogs: React.FC<OrganizationAuditLogsProps> = ({ or
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-800 pb-4">
         <div>
-          <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+          <TypoHeading as="h2">
             <ShieldAlert size={20} className="text-indigo-400" /> Organization Audit Logs
-          </h2>
+          </TypoHeading>
           <p className="text-gray-400 text-xs mt-1">
             Immutable security and administrative action audit trail for your organization.
           </p>

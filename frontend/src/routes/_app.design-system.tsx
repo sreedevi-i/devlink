@@ -13,6 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Terminal } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export const Route = createFileRoute("/_app/design-system")({
   component: DesignSystemComponent,
@@ -22,14 +23,14 @@ function DesignSystemComponent() {
   return (
     <div className="container py-10 space-y-12">
       <div className="space-y-4">
-        <h1 className="text-4xl font-bold tracking-tight">Design System</h1>
-        <p className="text-lg text-muted-foreground">
+        <TypoHeading as="h1">Design System</TypoHeading>
+        <TypoCaption as="p">
           A unified design system of reusable, accessible components for DevLink.
-        </p>
+        </TypoCaption>
       </div>
 
       <section className="space-y-4 border rounded-lg p-6">
-        <h2 className="text-2xl font-semibold">Buttons</h2>
+        <TypoHeading as="h2">Buttons</TypoHeading>
         <div className="flex flex-wrap gap-4">
           <Button>Default</Button>
           <Button variant="secondary">Secondary</Button>
@@ -41,7 +42,7 @@ function DesignSystemComponent() {
       </section>
 
       <section className="space-y-4 border rounded-lg p-6">
-        <h2 className="text-2xl font-semibold">Inputs & Forms</h2>
+        <TypoHeading as="h2">Inputs & Forms</TypoHeading>
         <div className="grid max-w-sm gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
@@ -69,7 +70,7 @@ function DesignSystemComponent() {
       </section>
 
       <section className="space-y-4 border rounded-lg p-6">
-        <h2 className="text-2xl font-semibold">Badges & Chips</h2>
+        <TypoHeading as="h2">Badges & Chips</TypoHeading>
         <div className="flex flex-wrap gap-4">
           <Badge>Default Badge</Badge>
           <Badge variant="secondary">Secondary</Badge>
@@ -81,7 +82,7 @@ function DesignSystemComponent() {
       </section>
 
       <section className="space-y-4 border rounded-lg p-6">
-        <h2 className="text-2xl font-semibold">Avatar</h2>
+        <TypoHeading as="h2">Avatar</TypoHeading>
         <div className="flex gap-4">
           <Avatar>
             <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
@@ -94,7 +95,7 @@ function DesignSystemComponent() {
       </section>
 
       <section className="space-y-4 border rounded-lg p-6">
-        <h2 className="text-2xl font-semibold">Cards</h2>
+        <TypoHeading as="h2">Cards</TypoHeading>
         <div className="grid sm:grid-cols-2 gap-4 max-w-3xl">
           <Card>
             <CardHeader>
@@ -109,7 +110,7 @@ function DesignSystemComponent() {
       </section>
 
       <section className="space-y-4 border rounded-lg p-6">
-        <h2 className="text-2xl font-semibold">Alerts</h2>
+        <TypoHeading as="h2">Alerts</TypoHeading>
         <div className="space-y-4 max-w-2xl">
           <Alert>
             <Terminal className="h-4 w-4" />
@@ -125,7 +126,7 @@ function DesignSystemComponent() {
       </section>
 
       <section className="space-y-4 border rounded-lg p-6">
-        <h2 className="text-2xl font-semibold">Skeleton</h2>
+        <TypoHeading as="h2">Skeleton</TypoHeading>
         <div className="flex items-center space-x-4 max-w-sm">
           <Skeleton className="h-12 w-12 rounded-full" />
           <div className="space-y-2">
@@ -136,7 +137,7 @@ function DesignSystemComponent() {
       </section>
 
       <section className="space-y-4 border rounded-lg p-6">
-        <h2 className="text-2xl font-semibold">Empty State</h2>
+        <TypoHeading as="h2">Empty State</TypoHeading>
         <EmptyState
           title="No projects found"
           description="Get started by creating a new project."

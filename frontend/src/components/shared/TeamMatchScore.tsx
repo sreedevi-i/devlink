@@ -2,6 +2,7 @@ import { Card } from "@/components/shared/primitives";
 import { Progress } from "@/components/ui/progress";
 import type { MatchResult } from "@/matching/types";
 import { cn } from "@/lib/utils";
+import { TypoCaption } from "@/components/shared/Typography";
 
 function getScoreColor(score: number): string {
   if (score >= 80) return "text-success";
@@ -32,7 +33,7 @@ export function TeamMatchScore({
         <span className={cn("text-[14px] font-bold", getScoreColor(totalScore))}>
           {totalScore}%
         </span>
-        <span className="text-[11px] text-muted-foreground">{getScoreLabel(totalScore)}</span>
+        <TypoCaption>{getScoreLabel(totalScore)}</TypoCaption>
       </div>
     );
   }
@@ -49,7 +50,7 @@ export function TeamMatchScore({
         <span className={cn("text-[36px] font-bold leading-none", getScoreColor(totalScore))}>
           {totalScore}
         </span>
-        <span className="mb-1 text-[14px] text-muted-foreground">/100</span>
+        <TypoCaption>/100</TypoCaption>
       </div>
       <Progress value={totalScore} className="mt-3" />
       <div className="mt-4 space-y-2">
@@ -63,7 +64,7 @@ export function TeamMatchScore({
           ] as const
         ).map(([label, value]) => (
           <div key={label} className="flex items-center justify-between text-[12px]">
-            <span className="text-muted-foreground">{label}</span>
+            <TypoCaption>{label}</TypoCaption>
             <span className="font-medium text-foreground">{value}%</span>
           </div>
         ))}

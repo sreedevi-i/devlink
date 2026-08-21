@@ -5,6 +5,7 @@ import { projectInsightsApi } from "@/api/modules/projectInsights";
 import type { ProjectInsightsResponse } from "@/api/modules/projectInsights";
 import { Skeleton } from "@/components/shared/primitives";
 import { cn } from "@/lib/utils";
+import { TypoCaption } from "@/components/shared/Typography";
 
 interface ProjectInsightsCardProps {
   projectId: string;
@@ -79,8 +80,7 @@ export function ProjectInsightsCard({
         >
           <Sparkles size={11} className={cn(mutation.isPending && "animate-pulse text-primary")} />
           AI Insights
-          {!mutation.isPending &&
-            (expanded ? <ChevronUp size={11} /> : <ChevronDown size={11} />)}
+          {!mutation.isPending && (expanded ? <ChevronUp size={11} /> : <ChevronDown size={11} />)}
         </button>
 
         {mutation.isPending && (
@@ -93,9 +93,9 @@ export function ProjectInsightsCard({
         {expanded && insights && (
           <div className="mt-2 space-y-2">
             {insights.summary && (
-              <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">
+              <TypoCaption as="p">
                 {insights.summary}
-              </p>
+              </TypoCaption>
             )}
 
             {insights.risk_alerts.length > 0 && (
@@ -154,9 +154,9 @@ export function ProjectInsightsCard({
                 ? "Hide"
                 : "Show"
               : "Generate"}
-          {!mutation.isPending && insights && (
-            expanded ? <ChevronUp size={11} /> : <ChevronDown size={11} />
-          )}
+          {!mutation.isPending &&
+            insights &&
+            (expanded ? <ChevronUp size={11} /> : <ChevronDown size={11} />)}
         </button>
       </div>
 
@@ -169,32 +169,30 @@ export function ProjectInsightsCard({
       )}
 
       {mutation.isError && (
-        <p className="mt-2 text-[11px] text-destructive">
-          Failed to generate insights. Try again.
-        </p>
+        <p className="mt-2 text-[11px] text-destructive">Failed to generate insights. Try again.</p>
       )}
 
       {expanded && insights && (
         <div className="mt-3 space-y-4">
           {/* Summary */}
           {insights.summary && (
-            <p className="text-[12px] leading-relaxed text-muted-foreground">{insights.summary}</p>
+            <TypoCaption as="p">{insights.summary}</TypoCaption>
           )}
 
           {/* Suggested builders */}
           {insights.suggested_builders.length > 0 && (
             <div>
-              <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              <TypoCaption as="p">
                 <Users2 size={11} />
                 Suggested Roles
-              </p>
+              </TypoCaption>
               <div className="space-y-1.5">
                 {insights.suggested_builders.map((b, i) => (
                   <div key={i} className="flex items-center justify-between">
                     <span className="text-[12px] text-foreground">{b.name}</span>
-                    <span className="text-[10px] text-muted-foreground">
+                    <TypoCaption>
                       {Math.round(b.match_score * 100)}% match
-                    </span>
+                    </TypoCaption>
                   </div>
                 ))}
               </div>
@@ -204,9 +202,9 @@ export function ProjectInsightsCard({
           {/* Role gaps */}
           {insights.role_gaps.length > 0 && (
             <div>
-              <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              <TypoCaption as="p">
                 Role Gaps
-              </p>
+              </TypoCaption>
               <div className="flex flex-wrap gap-1.5">
                 {insights.role_gaps.map((gap, i) => (
                   <span
@@ -225,10 +223,10 @@ export function ProjectInsightsCard({
           {/* Risk alerts */}
           {insights.risk_alerts.length > 0 && (
             <div>
-              <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              <TypoCaption as="p">
                 <AlertTriangle size={11} />
                 Risk Alerts
-              </p>
+              </TypoCaption>
               <div className="space-y-1.5">
                 {insights.risk_alerts.map((alert, i) => (
                   <div

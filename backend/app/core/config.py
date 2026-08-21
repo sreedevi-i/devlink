@@ -130,9 +130,15 @@ class Settings(BaseSettings):
 
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REDIRECT_URI: str = ""
 
     LINKEDIN_CLIENT_ID: str = ""
     LINKEDIN_CLIENT_SECRET: str = ""
+
+    MICROSOFT_CLIENT_ID: str = ""
+    MICROSOFT_CLIENT_SECRET: str = ""
+    MICROSOFT_TENANT_ID: str = "common"
+    MICROSOFT_REDIRECT_URI: str = ""
 
     # ==========================================================
     # Uploads
@@ -164,6 +170,12 @@ class Settings(BaseSettings):
 
     OPENAI_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
+
+    # ==========================================================
+    # External Integrations
+    # ==========================================================
+
+    GITHUB_API_TOKEN: str | None = None
 
     # ==========================================================
     # Logging
@@ -299,6 +311,7 @@ class Settings(BaseSettings):
     ENABLE_EMAIL_VERIFICATION: bool = True
     ENABLE_GOOGLE_LOGIN: bool = True
     ENABLE_GITHUB_LOGIN: bool = True
+    ENABLE_MICROSOFT_LOGIN: bool = True
     ENABLE_AI_ASSISTANT: bool = True
     ENABLE_NOTIFICATIONS: bool = True
     ENABLE_CHAT: bool = True

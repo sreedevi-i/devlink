@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { TypoSection, TypoCaption, TypoCard, TypoHeading } from "@/components/shared/Typography";
 
 interface DashboardMember {
   user_id: string;
@@ -203,12 +204,12 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
 
   if (error || !d) {
     return (
-      <Card className="flex flex-col items-center justify-center p-8 text-center border-dashed border-2 border-red-500/20 bg-red-500/5">
-        <AlertCircle className="h-12 w-12 text-red-500 mb-3" />
-        <h3 className="text-lg font-bold text-foreground">Workspace Locked</h3>
-        <p className="text-sm text-muted-foreground mt-1 max-w-sm">
+      <Card className="flex flex-col items-center justify-center p-8 text-center border-dashed border-2 border-destructive/20 bg-destructive/5">
+        <AlertCircle className="h-12 w-12 text-destructive mb-3" />
+        <TypoSection>Workspace Locked</TypoSection>
+        <TypoCaption as="p">
           You must be an active project team member to access this private workspace dashboard.
-        </p>
+        </TypoCaption>
       </Card>
     );
   }
@@ -222,12 +223,12 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
   const getActivityIcon = (type: string) => {
     switch (type) {
       case "project_milestone":
-        return <Flag className="h-4 w-4 text-emerald-500" />;
+        return <Flag className="h-4 w-4 text-success" />;
       case "project_announcement":
-        return <Bell className="h-4 w-4 text-indigo-500" />;
+        return <Bell className="h-4 w-4 text-info" />;
       case "project_created":
       case "project_updated":
-        return <TrendingUp className="h-4 w-4 text-sky-500" />;
+        return <TrendingUp className="h-4 w-4 text-primary" />;
       default:
         return <Activity className="h-4 w-4 text-muted-foreground" />;
     }
@@ -241,18 +242,18 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <h2 className="text-xl font-bold text-foreground">Team Workspace Dashboard</h2>
+              <span className="inline-flex h-2 w-2 rounded-full bg-success animate-pulse" />
+              <TypoHeading as="h2">Team Workspace Dashboard</TypoHeading>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <TypoCaption as="p">
               Centralized project status, announcements, and milestones.
-            </p>
+            </TypoCaption>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
             {/* Project Stage Quick Action */}
             <div className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-1.5 shadow-sm">
-              <span className="text-xs font-medium text-muted-foreground">Project Stage:</span>
+              <TypoCaption>Project Stage:</TypoCaption>
               {hasWriteAccess ? (
                 <select
                   value={d.stage}
@@ -303,7 +304,7 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-primary" />
-                <h3 className="text-base font-bold text-foreground">Upcoming Milestones</h3>
+                <TypoSection>Upcoming Milestones</TypoSection>
               </div>
               <span className="text-xs font-semibold bg-muted px-2 py-1 rounded">
                 {completedMilestones} / {totalMilestones} Completed
@@ -340,7 +341,7 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
                           })
                         }
                         disabled={!hasWriteAccess || toggleMilestoneMutation.isPending}
-                        className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer disabled:opacity-50"
+                        className="mt-1 h-4 w-4 rounded border-border text-primary focus:ring-primary cursor-pointer disabled:opacity-50"
                       />
                       <div className="min-w-0 flex-1">
                         <p
@@ -352,12 +353,12 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
                           {m.title}
                         </p>
                         {m.description && (
-                          <p className="text-xs text-muted-foreground mt-0.5">{m.description}</p>
+                          <TypoCaption as="p">{m.description}</TypoCaption>
                         )}
                         {m.due_date && (
-                          <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground mt-1.5">
+                          <TypoCaption>
                             <Clock size={10} /> Due {new Date(m.due_date).toLocaleDateString()}
-                          </span>
+                          </TypoCaption>
                         )}
                       </div>
                     </li>
@@ -367,7 +368,7 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
             ) : (
               <div className="text-center py-8 border border-dashed rounded-lg border-border/60">
                 <Flag className="h-8 w-8 text-muted-foreground/60 mx-auto mb-2" />
-                <p className="text-xs text-muted-foreground">No team milestones scheduled.</p>
+                <TypoCaption as="p">No team milestones scheduled.</TypoCaption>
               </div>
             )}
           </Card>
@@ -376,7 +377,7 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
           <Card className="p-6 space-y-4">
             <div className="flex items-center gap-2">
               <Bell className="h-5 w-5 text-primary" />
-              <h3 className="text-base font-bold text-foreground">Announcements</h3>
+              <TypoSection>Announcements</TypoSection>
             </div>
 
             {d.announcements.length > 0 ? (
@@ -388,7 +389,7 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h4 className="text-sm font-bold text-foreground">{ann.title}</h4>
+                        <TypoCard>{ann.title}</TypoCard>
                         <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
                           <span>
                             By {ann.author.first_name} {ann.author.last_name}
@@ -403,16 +404,16 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
                         size={24}
                       />
                     </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">
+                    <TypoCaption as="p">
                       {ann.content}
-                    </p>
+                    </TypoCaption>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="text-center py-8 border border-dashed rounded-lg border-border/60">
                 <Bell className="h-8 w-8 text-muted-foreground/60 mx-auto mb-2" />
-                <p className="text-xs text-muted-foreground">No recent team announcements.</p>
+                <TypoCaption as="p">No recent team announcements.</TypoCaption>
               </div>
             )}
           </Card>
@@ -424,7 +425,7 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
           <Card className="p-5 space-y-4">
             <div className="flex items-center gap-2 border-b border-border/60 pb-3">
               <Users2 className="h-4 w-4 text-primary" />
-              <h3 className="text-sm font-bold text-foreground">Active Team</h3>
+              <TypoSection>Active Team</TypoSection>
             </div>
 
             <ul className="space-y-3">
@@ -441,7 +442,7 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
                       <p className="text-xs font-semibold text-foreground leading-tight truncate">
                         {m.full_name || m.username}
                       </p>
-                      <p className="text-[10px] text-muted-foreground">@{m.username}</p>
+                      <TypoCaption as="p">@{m.username}</TypoCaption>
                     </div>
                   </div>
                   <span className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wider text-primary/80 bg-primary/5 border border-primary/10 px-1.5 py-0.5 rounded">
@@ -455,9 +456,9 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
             {/* Pending invites */}
             {d.pending_invitations.length > 0 && (
               <div className="pt-4 border-t border-border/60 space-y-3">
-                <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                <TypoCaption as="p">
                   Pending Invitations ({d.pending_invitations.length})
-                </p>
+                </TypoCaption>
                 <ul className="space-y-3">
                   {d.pending_invitations.map((invite) => (
                     <li
@@ -474,10 +475,10 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
                           <p className="text-xs font-semibold text-foreground truncate">
                             {invite.full_name || invite.username}
                           </p>
-                          <p className="text-[10px] text-muted-foreground">@{invite.username}</p>
+                          <TypoCaption as="p">@{invite.username}</TypoCaption>
                         </div>
                       </div>
-                      <span className="text-[10px] text-muted-foreground italic">Pending</span>
+                      <TypoCaption>Pending</TypoCaption>
                     </li>
                   ))}
                 </ul>
@@ -489,7 +490,7 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
           <Card className="p-5 space-y-4">
             <div className="flex items-center gap-2 border-b border-border/60 pb-3">
               <Activity className="h-4 w-4 text-primary" />
-              <h3 className="text-sm font-bold text-foreground">Recent Activity</h3>
+              <TypoSection>Recent Activity</TypoSection>
             </div>
 
             {d.recent_activity.length > 0 ? (
@@ -505,21 +506,21 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-foreground">{act.title}</p>
                       {act.description && <p className="text-[10px] mt-0.5">{act.description}</p>}
-                      <span className="text-[9px] text-muted-foreground mt-1 block">
+                      <TypoCaption>
                         {new Date(act.created_at).toLocaleTimeString([], {
                           hour: "2-digit",
                           minute: "2-digit",
                         })}{" "}
                         · {new Date(act.created_at).toLocaleDateString()}
-                      </span>
+                      </TypoCaption>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-muted-foreground text-center py-4">
+              <TypoCaption as="p">
                 No recent team activities.
-              </p>
+              </TypoCaption>
             )}
           </Card>
         </div>
@@ -531,7 +532,7 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <Card className="w-full max-w-md p-6 space-y-4 relative border border-border shadow-lg">
             <div className="flex items-center justify-between border-b pb-3">
-              <h3 className="text-base font-bold text-foreground">Create Milestone</h3>
+              <TypoSection>Create Milestone</TypoSection>
               <button
                 onClick={() => setShowMilestoneModal(false)}
                 className="text-muted-foreground hover:text-foreground transition"
@@ -619,7 +620,7 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <Card className="w-full max-w-md p-6 space-y-4 relative border border-border shadow-lg">
             <div className="flex items-center justify-between border-b pb-3">
-              <h3 className="text-base font-bold text-foreground">Post Announcement</h3>
+              <TypoSection>Post Announcement</TypoSection>
               <button
                 onClick={() => setShowAnnouncementModal(false)}
                 className="text-muted-foreground hover:text-foreground transition"

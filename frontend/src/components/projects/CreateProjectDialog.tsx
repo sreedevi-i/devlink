@@ -13,6 +13,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { TechStackSuggest } from "./TechStackSuggest";
+import { ProjectTemplateSelect } from "./ProjectTemplateSelect";
+import { TypoCaption } from "@/components/shared/Typography";
+import { AIDescriptionGenerator } from "./AIDescriptionGenerator";
 
 interface Props {
   open: boolean;
@@ -24,6 +27,7 @@ export function CreateProjectDialog({ open, onOpenChange }: Props) {
   const [warnings, setWarnings] = useState<SimilarProjectWarning[]>([]);
   const [pendingData, setPendingData] = useState<CreateProjectFormData | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | undefined>();
 
   const {
     register,
@@ -52,6 +56,7 @@ export function CreateProjectDialog({ open, onOpenChange }: Props) {
     reset();
     setWarnings([]);
     setPendingData(null);
+    setSelectedTemplateId(undefined);
     onOpenChange(false);
   }
 
@@ -111,9 +116,9 @@ export function CreateProjectDialog({ open, onOpenChange }: Props) {
                 <p className="text-[13px] font-semibold text-foreground">
                   Similar projects already exist
                 </p>
-                <p className="text-[12px] text-muted-foreground">
+                <TypoCaption as="p">
                   Review these before creating a duplicate.
-                </p>
+                </TypoCaption>
               </div>
             </div>
 
@@ -124,10 +129,10 @@ export function CreateProjectDialog({ open, onOpenChange }: Props) {
                   className="rounded-md border border-border bg-surface p-3 text-[12px]"
                 >
                   <p className="font-semibold text-foreground">{w.title}</p>
-                  <p className="mt-0.5 text-muted-foreground">
+                  <TypoCaption as="p">
                     Title match: {Math.round(w.title_similarity * 100)}% · Description match:{" "}
                     {Math.round(w.description_similarity * 100)}%
-                  </p>
+                  </TypoCaption>
                   <a
                     href={`/projects/${w.slug}`}
                     target="_blank"
@@ -161,6 +166,19 @@ export function CreateProjectDialog({ open, onOpenChange }: Props) {
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-3.5 sm:space-y-4 overflow-y-auto pr-1"
           >
+            <div className="pb-2 mb-2 border-b border-border/50">
+              <ProjectTemplateSelect
+                selectedTemplateId={selectedTemplateId}
+                onTemplateIdChange={setSelectedTemplateId}
+                onSelect={(fields) => {
+                  if (fields.description) setValue("description", fields.description, { shouldValidate: true });
+                  if (fields.stage) setValue("stage", fields.stage as any, { shouldValidate: true });
+                  if (fields.max_team_size) setValue("max_team_size", fields.max_team_size, { shouldValidate: true });
+                  if (fields.tech_stack) setValue("tech_stack", fields.tech_stack, { shouldValidate: true });
+                }}
+              />
+            </div>
+
             <div className="space-y-1.5">
               <Label className="text-[12px] text-muted-foreground">Title</Label>
               <Input
@@ -181,6 +199,10 @@ export function CreateProjectDialog({ open, onOpenChange }: Props) {
                 className="bg-surface text-sm sm:text-[13px]"
               />
             </div>
+
+            <AIDescriptionGenerator 
+              onGenerated={(desc) => setValue("description", desc, { shouldValidate: true })} 
+            />
 
             <div className="space-y-1.5">
               <Label className="text-[12px] text-muted-foreground">Description</Label>

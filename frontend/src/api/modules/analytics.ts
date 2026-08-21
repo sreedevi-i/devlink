@@ -36,16 +36,50 @@ export interface DashboardSnapshot {
   recent_notifications?: unknown[];
   recent_posts?: unknown[];
   bookmarks?: unknown[];
+  quickActions?: unknown[];
+}
+
+export interface ProfileAnalyticSummaryItem {
+  total: number;
+  growth_pct: number;
+}
+
+export interface ProfileAnalyticsSummary {
+  profile_views: ProfileAnalyticSummaryItem;
+  search_appearances: ProfileAnalyticSummaryItem;
+  connection_requests: ProfileAnalyticSummaryItem;
+  repository_clicks: ProfileAnalyticSummaryItem;
+  project_clicks: ProfileAnalyticSummaryItem;
+}
+
+export interface ProfileAnalyticTrendItem {
+  date: string;
+  profile_views: number;
+  search_appearances: number;
+  connection_requests: number;
+  repository_clicks: number;
+  project_clicks: number;
+}
+
+export interface ProfileAnalyticsResponse {
+  summary: ProfileAnalyticsSummary;
+  trends: ProfileAnalyticTrendItem[];
 }
 
 export const analyticsApi = {
   dashboard: () => api.get<DashboardSnapshot>("/api/analytics/dashboard"),
-  profile: () => api.get<unknown>("/api/analytics/profile"),
+  profile: () => api.get<ProfileAnalyticsResponse>("/api/analytics/profile"),
   projects: () => api.get<unknown>("/api/analytics/projects"),
   communityStats: (days?: number) =>
     api.get<CommunityStatsResponse>(`/api/analytics/community/stats${days ? `?days=${days}` : ""}`),
   requestAnalytics: (days: number) =>
     api.get<RequestAnalytics>(`/api/analytics/requests?days=${days}`),
+  trackClick: (clickType: "repository" | "project", targetUserId: string, entityId?: string) =>
+    api.post<{ status: string }>("/api/analytics/profile/click", {
+      click_type: clickType,
+      target_user_id: targetUserId,
+      entity_id: entityId,
+    }),
 };
 
 export interface RequestAnalytics {

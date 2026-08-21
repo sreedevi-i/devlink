@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/components/shared/primitives";
 import { FileText, Upload, XCircle } from "lucide-react";
 import { uploadCurrentUserResume } from "@/services/profile";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
 
@@ -77,8 +78,8 @@ export function ResumeUploadCard({ resumeUrl, editable = false }: ResumeUploadCa
             <FileText size={16} />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-foreground">Resume</h2>
-            <p className="text-xs text-muted-foreground">PDF uploads only · max 5MB</p>
+            <TypoHeading as="h2">Resume</TypoHeading>
+            <TypoCaption as="p">PDF uploads only · max 5MB</TypoCaption>
           </div>
         </div>
         {editable ? (
@@ -113,9 +114,9 @@ export function ResumeUploadCard({ resumeUrl, editable = false }: ResumeUploadCa
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-medium text-foreground">Resume ready to share</p>
-              <p className="text-xs text-muted-foreground">
+              <TypoCaption as="p">
                 Your latest PDF is attached to this profile.
-              </p>
+              </TypoCaption>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <a
@@ -143,7 +144,7 @@ export function ResumeUploadCard({ resumeUrl, editable = false }: ResumeUploadCa
               <Upload size={16} />
               <span>{dropState}</span>
             </div>
-            <p className="text-sm text-muted-foreground">No resume uploaded</p>
+            <TypoCaption as="p">No resume uploaded</TypoCaption>
             {editable ? (
               <button
                 type="button"
@@ -158,7 +159,7 @@ export function ResumeUploadCard({ resumeUrl, editable = false }: ResumeUploadCa
       </div>
 
       {isUploading ? (
-        <p className="mt-3 text-sm text-muted-foreground">Uploading your resume…</p>
+        <TypoCaption as="p">Uploading your resume…</TypoCaption>
       ) : null}
       {error ? (
         <div className="mt-3 flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-2 text-sm text-red-600">

@@ -4,6 +4,7 @@ import { BarChart3, Download, Loader2 } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { analyticsApi, type RequestAnalytics } from "@/api/modules/analytics";
 import { cn } from "@/lib/utils";
+import { TypoSection, TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export const Route = createFileRoute("/_app/admin/api-request-analytics")({
   component: ApiRequestAnalyticsDashboard,
@@ -96,12 +97,12 @@ function ApiRequestAnalyticsDashboard() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          <TypoHeading as="h2">
             API Request Analytics
-          </h2>
-          <p className="text-[13px] text-muted-foreground">
+          </TypoHeading>
+          <TypoCaption as="p">
             Request volume, latency, and error tracking across the API.
-          </p>
+          </TypoCaption>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 rounded-lg border border-border bg-card p-1">
@@ -132,16 +133,16 @@ function ApiRequestAnalyticsDashboard() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
         {stats.map((s) => (
           <div key={s.label} className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <TypoCaption as="p">
               {s.label}
-            </p>
+            </TypoCaption>
             <p className={cn("mt-2 text-[28px] font-bold tracking-tight", s.accent)}>{s.value}</p>
           </div>
         ))}
       </div>
 
       <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm">
-        <h3 className="mb-4 text-[13px] font-semibold text-foreground">Daily Request Volume</h3>
+        <TypoSection>Daily Request Volume</TypoSection>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data.daily_trend}>
@@ -170,11 +171,11 @@ function ApiRequestAnalyticsDashboard() {
       </div>
 
       <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm">
-        <h3 className="mb-4 text-[13px] font-semibold text-foreground">Requests by Endpoint</h3>
+        <TypoSection>Requests by Endpoint</TypoSection>
         {data.requests_by_endpoint.length === 0 ? (
-          <p className="py-8 text-center text-[13px] text-muted-foreground">
+          <TypoCaption as="p">
             No request data recorded yet.
-          </p>
+          </TypoCaption>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-[13px]">
@@ -196,9 +197,9 @@ function ApiRequestAnalyticsDashboard() {
                   >
                     <td className="p-3 font-medium text-foreground">{e.endpoint}</td>
                     <td className="p-3">
-                      <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">
+                      <TypoCaption>
                         {e.method}
-                      </span>
+                      </TypoCaption>
                     </td>
                     <td className="p-3 text-right">{e.requests.toLocaleString()}</td>
                     <td className="p-3 text-right">{e.avg_response_time_ms}</td>

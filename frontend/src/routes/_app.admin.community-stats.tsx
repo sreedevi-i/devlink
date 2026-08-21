@@ -11,6 +11,7 @@ import {
   Cell,
 } from "recharts";
 import { analyticsApi, CommunityStatsResponse } from "@/api/modules/analytics";
+import { TypoSection, TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export const Route = createFileRoute("/_app/admin/community-stats")({
   component: CommunityStatsDashboard,
@@ -137,13 +138,13 @@ function CommunityStatsDashboard() {
     <div className="p-6" role="main" aria-label="Community Statistics Dashboard">
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+          <TypoHeading as="h1">
             Community Statistics Dashboard
-          </h1>
-          <p className="text-muted-foreground mt-1">
+          </TypoHeading>
+          <TypoCaption as="p">
             Platform-wide metrics for the last {data.timeframe_days} days. Updated:{" "}
             {new Date(data.generated_at).toLocaleString()}
-          </p>
+          </TypoCaption>
         </div>
         <div className="flex items-center gap-4">
           <label className="flex items-center gap-2 cursor-pointer">
@@ -185,7 +186,7 @@ function CommunityStatsDashboard() {
                 <span aria-hidden="true" className="text-xl">
                   {metric.icon}
                 </span>
-                <h3 className="text-sm font-medium">{metric.title}</h3>
+                <TypoSection>{metric.title}</TypoSection>
               </div>
               <p className="text-3xl font-bold">{metric.value}</p>
             </article>
@@ -199,7 +200,7 @@ function CommunityStatsDashboard() {
             Most Popular Skills
           </h2>
           {data.most_popular_skills.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">No skill data available.</p>
+            <TypoCaption as="p">No skill data available.</TypoCaption>
           ) : (
             <div className="h-80" role="img" aria-label="Bar chart showing most popular skills">
               <ResponsiveContainer width="100%" height="100%">
@@ -254,7 +255,7 @@ function CommunityStatsDashboard() {
             Trending Technologies
           </h2>
           {data.trending_technologies.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">No technology data available.</p>
+            <TypoCaption as="p">No technology data available.</TypoCaption>
           ) : (
             <div className="h-80" role="img" aria-label="Bar chart showing trending technologies">
               <ResponsiveContainer width="100%" height="100%">

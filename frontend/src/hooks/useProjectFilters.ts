@@ -21,7 +21,6 @@ export function useProjectFilters() {
     navigate({
       to: "/projects",
       search: (prev: SearchRecord) => ({ ...prev, ...filters, page: 1 }),
-      search: (prev: Record<string, unknown>) => ({ ...prev, ...filters, page: 1 }),
       replace: true,
     });
   };
@@ -30,8 +29,6 @@ export function useProjectFilters() {
     navigate({
       to: "/projects",
       search: (prev: SearchRecord) => {
-        // Drop every filter key, keep anything else the URL was carrying, and
-        // send the user back to the first page of unfiltered results.
         const {
           language: _language,
           experience: _experience,
@@ -41,8 +38,6 @@ export function useProjectFilters() {
           opensource: _opensource,
           ...rest
         } = prev;
-      search: (prev: Record<string, unknown>) => {
-        const { language, experience, tech, remote, paid, opensource, ...rest } = prev;
         return { ...rest, page: 1 };
       },
       replace: true,

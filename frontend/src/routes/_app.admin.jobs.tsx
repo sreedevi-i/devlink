@@ -1,81 +1,26 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { api } from "@/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  XCircle,
-  RefreshCw,
-  Search,
-  Activity,
-  Cpu,
-  Play,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
+import { ChevronUp, ChevronDown, RefreshCw, Activity, Play, CheckCircle, XCircle, Clock, Cpu, Search } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { api } from "@/api/client";
+
 
 export const Route = createFileRoute("/_app/admin/jobs")({
-  component: AdminJobsPage,
+  component: () => <div className="p-6">Admin Jobs Page</div>,
 });
 
-interface WorkerInfo {
-  status: string;
-  active_tasks: number;
-  queued_tasks: number;
-  total_processed: number;
-}
-
-interface JobStats {
 interface AdminJobStats {
   total: number;
   running: number;
   completed: number;
   failed: number;
-  avg_processing_time: number | null;
-  worker_health?: {
-    status: string;
-    workers?: Record<string, WorkerInfo>;
-  };
-}
-
-interface BackgroundJob {
-  id: string;
-  task_name: string;
-  status: string;
-  worker: string | null;
-  retries: number;
-  processing_time: number | null;
-  created_at: string;
-  payload: unknown;
-  result: unknown;
-  error: string | null;
-}
-
-interface JobsPage {
-  jobs: BackgroundJob[];
-  total: number;
   avg_processing_time?: number | null;
   worker_health?: {
     status: string;
@@ -115,8 +60,6 @@ function AdminJobsPage() {
   // Fetch stats and worker health every 5 seconds
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ["admin-job-stats"],
-    // api.get resolves to the parsed body, so there is no `.data` to unwrap.
-    queryFn: () => api.get<JobStats>("/admin/background-jobs/stats"),
     queryFn: async () => {
       return api.get<AdminJobStats>("/admin/background-jobs/stats");
     },
@@ -126,9 +69,6 @@ function AdminJobsPage() {
   // Fetch jobs list
   const { data: jobsData, isLoading: jobsLoading } = useQuery({
     queryKey: ["admin-jobs", statusFilter, search, page],
-    queryFn: () => {
-      // The client's option is `query`, not axios' `params`.
-      const query: Record<string, string | number> = {
     queryFn: async () => {
       const params: {
         skip: number;
@@ -137,12 +77,8 @@ function AdminJobsPage() {
         search?: string;
       } = {
         skip: (page - 1) * limit,
-        limit,
+        limit: limit,
       };
-      if (statusFilter !== "all") query.status = statusFilter;
-      if (search) query.search = search;
-
-      return api.get<JobsPage>("/admin/background-jobs/", { query });
       if (statusFilter !== "all") params.status = statusFilter;
       if (search) params.search = search;
 
@@ -284,27 +220,6 @@ function AdminJobsPage() {
         <CardContent>
           {stats?.worker_health?.workers && Object.keys(stats.worker_health.workers).length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-2">
-              {Object.entries(stats.worker_health.workers).map(([name, info]) => (
-                <div
-                  key={name}
-                  className="border border-border rounded-lg p-3 bg-surface/50 space-y-2"
-                >
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-sm truncate max-w-[200px]" title={name}>
-                      {name}
-                    </span>
-                    <Badge variant={info.status === "active" ? "default" : "secondary"}>
-                      {info.status}
-                    </Badge>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
-                    <div>
-                      <p className="font-medium text-foreground">{info.active_tasks}</p>
-                      <p>Active</p>
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">{info.queued_tasks}</p>
-                      <p>Queued</p>
               {Object.entries(stats.worker_health.workers).map(
                 ([name, info]: [
                   string,
@@ -419,7 +334,6 @@ function AdminJobsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {jobsData.jobs.map((job) => (
                 {jobsData.jobs.map((job: AdminJob) => (
                   <>
                     <TableRow key={job.id} className="hover:bg-muted/50 transition-colors">
@@ -493,7 +407,6 @@ function AdminJobsPage() {
                                   Execution Result
                                 </h4>
                                 <pre className="bg-surface border border-border rounded p-3 text-xs overflow-x-auto font-mono text-foreground max-h-48">
-                                  {job.result ? JSON.stringify(job.result, null, 2) : "None"}
                                   {job.result !== undefined && job.result !== null
                                     ? JSON.stringify(job.result, null, 2)
                                     : "None"}
@@ -549,3 +462,4 @@ function AdminJobsPage() {
     </div>
   );
 }
+

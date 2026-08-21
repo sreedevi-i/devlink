@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Card } from "@/components/shared/primitives";
 import { useState, useEffect } from "react";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 import {
   LineChart,
   Line,
@@ -145,12 +146,12 @@ function AnalyticsPage() {
       {/* Header & Timeframe Filter */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-[24px] font-bold tracking-tight text-foreground">
+          <TypoHeading as="h1">
             Analytics Dashboard
-          </h1>
-          <p className="text-[13px] text-muted-foreground">
+          </TypoHeading>
+          <TypoCaption as="p">
             Tracking Daily Active Users, Retention, Conversions, and Project Growth.
-          </p>
+          </TypoCaption>
         </div>
         <div className="flex items-center gap-1.5 rounded-lg border border-border bg-card p-1">
           {[7, 14, 30].map((d) => (
@@ -174,9 +175,9 @@ function AnalyticsPage() {
         {/* DAU */}
         <Card className="relative overflow-hidden p-5 transition-all hover:border-primary/40">
           <div className="flex items-center justify-between">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <TypoCaption as="p">
               DAU (Daily Active)
-            </p>
+            </TypoCaption>
             <span className="flex h-2.5 w-2.5 items-center justify-center">
               <span className="absolute inline-flex h-2.5 w-2.5 animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
@@ -192,35 +193,35 @@ function AnalyticsPage() {
 
         {/* WAU */}
         <Card className="p-5 transition-all hover:border-primary/40">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <TypoCaption as="p">
             WAU (Weekly Active)
-          </p>
+          </TypoCaption>
           <p className="mt-3 text-[28px] font-bold tracking-tight text-foreground">
             {loading ? "..." : data.active_users.wau}
           </p>
-          <p className="mt-1 text-[11px] font-medium text-muted-foreground">
+          <TypoCaption as="p">
             Active in last 7 days
-          </p>
+          </TypoCaption>
         </Card>
 
         {/* MAU */}
         <Card className="p-5 transition-all hover:border-primary/40">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <TypoCaption as="p">
             MAU (Monthly Active)
-          </p>
+          </TypoCaption>
           <p className="mt-3 text-[28px] font-bold tracking-tight text-foreground">
             {loading ? "..." : data.active_users.mau}
           </p>
-          <p className="mt-1 text-[11px] font-medium text-muted-foreground">
+          <TypoCaption as="p">
             Active in last 30 days
-          </p>
+          </TypoCaption>
         </Card>
 
         {/* Project Growth Overview */}
         <Card className="p-5 transition-all hover:border-primary/40">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <TypoCaption as="p">
             Total Projects
-          </p>
+          </TypoCaption>
           <div className="flex items-baseline gap-2">
             <p className="mt-3 text-[28px] font-bold tracking-tight text-foreground">
               {loading ? "..." : data.project_growth.total_projects}
@@ -229,9 +230,9 @@ function AnalyticsPage() {
               +{data.project_growth.new_projects_period} in period
             </span>
           </div>
-          <p className="mt-1 text-[11px] font-medium text-muted-foreground">
+          <TypoCaption as="p">
             Growth Rate: {data.project_growth.growth_rate_pct}%
-          </p>
+          </TypoCaption>
         </Card>
       </div>
 
@@ -242,9 +243,9 @@ function AnalyticsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[14px] font-semibold text-foreground">Daily Active Users Trend</p>
-              <p className="text-[12px] text-muted-foreground">
+              <TypoCaption as="p">
                 User engagement over past {days} days
-              </p>
+              </TypoCaption>
             </div>
           </div>
           <div className="mt-4 h-64">
@@ -288,7 +289,7 @@ function AnalyticsPage() {
               <p className="text-[14px] font-semibold text-foreground">
                 Project Growth & Additions
               </p>
-              <p className="text-[12px] text-muted-foreground">New projects created daily</p>
+              <TypoCaption as="p">New projects created daily</TypoCaption>
             </div>
           </div>
           <div className="mt-4 h-64">
@@ -323,9 +324,9 @@ function AnalyticsPage() {
         <Card className="space-y-4 p-5">
           <div>
             <p className="text-[14px] font-semibold text-foreground">User Retention Rate</p>
-            <p className="text-[12px] text-muted-foreground">
+            <TypoCaption as="p">
               Percentage of returning registered users over active windows
-            </p>
+            </TypoCaption>
           </div>
 
           <div className="space-y-4 pt-2">
@@ -341,10 +342,10 @@ function AnalyticsPage() {
                   style={{ width: `${Math.min(100, data.retention.retention_7d_pct)}%` }}
                 />
               </div>
-              <p className="mt-1 text-[11px] text-muted-foreground">
+              <TypoCaption as="p">
                 {data.retention.retained_7d_users} retained of {data.retention.eligible_7d_users}{" "}
                 eligible users
-              </p>
+              </TypoCaption>
             </div>
 
             {/* 30-Day Retention */}
@@ -359,10 +360,10 @@ function AnalyticsPage() {
                   style={{ width: `${Math.min(100, data.retention.retention_30d_pct)}%` }}
                 />
               </div>
-              <p className="mt-1 text-[11px] text-muted-foreground">
+              <TypoCaption as="p">
                 {data.retention.retained_30d_users} retained of {data.retention.eligible_30d_users}{" "}
                 eligible users
-              </p>
+              </TypoCaption>
             </div>
           </div>
         </Card>
@@ -371,9 +372,9 @@ function AnalyticsPage() {
         <Card className="space-y-4 p-5">
           <div>
             <p className="text-[14px] font-semibold text-foreground">Conversion Funnel</p>
-            <p className="text-[12px] text-muted-foreground">
+            <TypoCaption as="p">
               Conversion benchmarks across profile, project, and application milestones
-            </p>
+            </TypoCaption>
           </div>
 
           <div className="grid gap-3 pt-2">

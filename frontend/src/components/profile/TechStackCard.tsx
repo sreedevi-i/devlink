@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { Card, TagChip } from "@/components/shared/primitives";
 import { Cpu } from "lucide-react";
 import type { ProfileSkill } from "@/mocks/seed";
+import { TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export interface TechStackCardProps {
   skills?: ProfileSkill[];
@@ -36,15 +35,15 @@ export function TechStackCard({
             <Cpu size={16} />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-foreground">Tech stack</h2>
-            <p className="text-xs text-muted-foreground">List the tools you work with</p>
+            <TypoHeading as="h2">Tech stack</TypoHeading>
+            <TypoCaption as="p">List the tools you work with</TypoCaption>
           </div>
         </div>
 
         <label className="mt-4 block text-sm">
-          <span className="mb-1 block text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+          <TypoCaption>
             Technologies
-          </span>
+          </TypoCaption>
           <textarea
             value={formValues.join(", ")}
             onChange={(event) => onTechStackChange?.(event.target.value)}
@@ -65,13 +64,13 @@ export function TechStackCard({
           <Cpu size={16} />
         </div>
         <div>
-          <h2 className="text-sm font-semibold text-foreground">Tech stack</h2>
-          <p className="text-xs text-muted-foreground">Core tools and technologies</p>
+          <TypoHeading as="h2">Tech stack</TypoHeading>
+          <TypoCaption as="p">Core tools and technologies</TypoCaption>
         </div>
       </div>
 
       {stackItems.length === 0 ? (
-        <p className="mt-4 text-sm text-muted-foreground">No technologies added yet.</p>
+        <TypoCaption as="p">No technologies added yet.</TypoCaption>
       ) : (
         <div className="mt-4 flex flex-wrap gap-2">
           {stackItems.map((item) => (

@@ -20,14 +20,22 @@ import {
   RotateCw,
   BadgeCheck,
   Camera,
+  TrendingUp,
 } from "lucide-react";
 import { copyText } from "@/lib/clipboard";
 import { ReportUserModal } from "@/components/shared/ReportUserModal";
+import { analyticsApi } from "@/api/modules/analytics";
 import SkillsCard from "@/components/profile/SkillsCard";
 import ExperienceCard from "@/components/profile/ExperienceCard";
 import { ProfileViewersList } from "@/components/profile/ProfileViewersList";
+import { PinnedProjectsCard } from "@/components/profile/PinnedProjectsCard";
+import { ProfileCompletionChecklist } from "@/components/profile/ProfileCompletionChecklist";
 import { FollowButton } from "@/components/shared/FollowButton";
 import { useFollowStatus } from "@/hooks/useFollow";
+import { ActivityTimeline } from "@/components/profile/ActivityTimeline";
+import { ContributionHeatmap } from "@/components/profile/ContributionHeatmap";
+import { GitHubInsights } from "@/components/github/GitHubInsights";
+import { TypoSection, TypoCaption, TypoHeading } from "@/components/shared/Typography";
 
 export const Route = createFileRoute("/_app/profile/$username")({
   head: ({ params }) => ({
@@ -135,6 +143,8 @@ function ProfilePage() {
         bio: "Product engineer. Ships fast, sleeps sometimes.",
         role: "Full Stack Developer",
         id: currentUser.id,
+        premium: currentUser.premium,
+        verified: currentUser.verified,
       }
     : builders.find((x) => x.handle === username);
   if (!b) throw notFound();
@@ -187,13 +197,13 @@ function ProfilePage() {
         <Card className="p-6 bg-gradient-to-r from-primary-soft via-transparent to-transparent border-primary/20">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
-              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <TypoSection>
                 <span className="text-lg">🚀</span> Your Shareable Public Portfolio
-              </h3>
-              <p className="text-xs text-muted-foreground">
+              </TypoSection>
+              <TypoCaption as="p">
                 Showcase your projects, skills, and flares with beautiful custom themes, custom
                 layouts, and a direct contact form.
-              </p>
+              </TypoCaption>
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <Link
@@ -219,9 +229,9 @@ function ProfilePage() {
       ) : (
         <Card className="p-4 bg-muted/40">
           <div className="flex items-center justify-between gap-4">
-            <p className="text-xs text-muted-foreground">
+            <TypoCaption as="p">
               Looking for a more polished, professional view of {b.name}'s work?
-            </p>
+            </TypoCaption>
             <Link
               to="/portfolio/$username"
               params={{ username: b.handle }}
@@ -233,14 +243,42 @@ function ProfilePage() {
         </Card>
       )}
 
+      {me && (
+        <ProfileCompletionChecklist
+          userProfile={{
+            avatar: avatarUrl,
+            banner: bannerUrl || undefined,
+            bio: b.bio,
+            skills: b.profileSkills?.map((s) => s.name) ?? b.skills,
+            experience: b.experienceLevel || b.role || b.company,
+            education: b.headline,
+            githubUrl: b.githubUrl,
+            portfolioUrl: b.portfolioUrl,
+            projects: projects.length,
+          }}
+        />
+      )}
+
       {/* Profile Card with Cover Banner & Avatar */}
-      <Card className="overflow-hidden p-0">
+      <Card
+        className={cn(
+          "overflow-hidden p-0",
+          b.premium && "border-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.08)]",
+        )}
+      >
         {/* Cover Banner */}
         <div className="group relative h-44 w-full overflow-hidden bg-muted">
           {bannerUrl ? (
             <img src={bannerUrl} alt="Profile banner" className="h-full w-full object-cover" />
           ) : (
-            <div className="h-full w-full bg-gradient-to-r from-primary/30 to-purple-500/30" />
+            <div
+              className={cn(
+                "h-full w-full bg-gradient-to-r",
+                b.premium
+                  ? "from-amber-600/40 via-amber-500/20 to-purple-600/30"
+                  : "from-primary/30 to-purple-500/30",
+              )}
+            />
           )}
 
           {me && (
@@ -263,6 +301,7 @@ function ProfilePage() {
               size="2xl"
               status={b.online}
               verified={b.verified}
+              premium={b.premium}
               editable={me}
               onImageUpload={(url) => {
                 setAvatarUrl(url);
@@ -271,32 +310,43 @@ function ProfilePage() {
               className="ring-4 ring-card shadow-lg"
             />
             <div className="min-w-0 flex-1 pt-12 sm:pt-4">
-              <h1 className="text-[22px] font-bold text-foreground flex items-center gap-2">
+              <TypoHeading as="h1">
                 {b.name}
-                {b.verified && (
-                  <BadgeCheck className="text-primary h-6 w-6" aria-label="Verified User" />
-                )}
-              </h1>
-              <p className="text-[13px] text-muted-foreground">
+                {b.verified &&
+                  (b.premium ? (
+                    <span className="inline-flex items-center gap-1.5">
+                      <BadgeCheck
+                        className="text-amber-500 fill-amber-500/10 h-6 w-6 animate-pulse"
+                        aria-label="Premium Verified User"
+                      />
+                      <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 border border-amber-500/30 text-amber-500 px-2 py-0.5 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.2)] animate-pulse">
+                        PRO VERIFIED
+                      </span>
+                    </span>
+                  ) : (
+                    <BadgeCheck className="text-primary h-6 w-6" aria-label="Verified User" />
+                  ))}
+              </TypoHeading>
+              <TypoCaption as="p">
                 @{b.handle} · {b.role}
-              </p>
+              </TypoCaption>
               <p className="mt-2 text-[13px] text-foreground">{b.bio}</p>
               <div className="mt-3 flex flex-wrap items-center gap-3 text-[12px] text-muted-foreground">
                 <div>
                   <span className="font-semibold">
                     {followStatus?.follower_count ?? b.followers ?? 0}
                   </span>
-                  <span className="m-1 text-muted-foreground">Followers</span>
+                  <TypoCaption>Followers</TypoCaption>
                 </div>
                 <div>
                   <span className="font-semibold">
                     {followStatus?.following_count ?? b.following ?? 0}
                   </span>
-                  <span className="m-1 text-muted-foreground">Following</span>
+                  <TypoCaption>Following</TypoCaption>
                 </div>
                 <div>
                   <span className="font-semibold">{b.contributions ?? 0}</span>
-                  <span className="ml-1 text-muted-foreground">Contributions</span>
+                  <TypoCaption>Contributions</TypoCaption>
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-3 text-[12px] text-muted-foreground">
@@ -327,6 +377,15 @@ function ProfilePage() {
                   <MessageCircle size={16} />
                   Contact Developer
                 </button>
+              )}
+              {me && (
+                <Link
+                  to="/profile-analytics"
+                  className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-[13px] font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+                >
+                  <TrendingUp size={16} />
+                  Profile Analytics
+                </Link>
               )}
               <button
                 type="button"
@@ -454,9 +513,9 @@ function ProfilePage() {
         )}
 
         {!summary && !summaryMutation.isPending && !summaryMutation.isError && (
-          <p className="mt-2 text-[12px] text-muted-foreground">
+          <TypoCaption as="p">
             Generate an AI-powered professional summary based on your profile, skills, and activity.
-          </p>
+          </TypoCaption>
         )}
 
         {summaryMutation.isError && (
@@ -481,16 +540,7 @@ function ProfilePage() {
           <SkillsCard skills={b.profileSkills ?? []} />
           <ExperienceCard role={b.role} company={b.company} experienceLevel={b.experienceLevel} />
 
-          {b.pinnedProjects?.length ? (
-            <Card className="p-4">
-              <p className="text-[13px] font-semibold text-foreground">Pinned Projects</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {b.pinnedProjects.map((project) => (
-                  <TagChip key={project}>{project}</TagChip>
-                ))}
-              </div>
-            </Card>
-          ) : null}
+          <PinnedProjectsCard username={b.handle} isOwnProfile={me} />
 
           {b.badges && b.badges.length > 0 && (
             <Card className="p-4">
@@ -509,24 +559,58 @@ function ProfilePage() {
           )}
         </div>
 
-        <Card className="p-4 lg:col-span-2">
-          <p className="text-[13px] font-semibold text-foreground">Projects</p>
-          <ul className="mt-3 divide-y divide-border">
-            {projects.slice(0, 4).map((p) => (
-              <li key={p.id} className="flex items-center gap-3 py-2">
-                <span className="grid h-8 w-8 place-items-center rounded-md bg-muted text-lg">
-                  {p.icon}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13px] font-semibold text-foreground">{p.name}</p>
-                  <p className="truncate text-[11px] text-muted-foreground">
-                    {p.stack.join(" · ")}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Card>
+        <div className="flex flex-col gap-4 lg:col-span-2">
+          <Card className="p-4">
+            <p className="text-[13px] font-semibold text-foreground">Projects</p>
+            <ul className="mt-3 divide-y divide-border">
+              {projects.slice(0, 4).map((p) => (
+                <li key={p.id} className="py-2">
+                  <Link
+                    to="/projects/$projectId"
+                    params={{ projectId: p.id }}
+                    onClick={() => {
+                      if (b.id) {
+                        analyticsApi.trackClick("project", b.id, p.id).catch(() => {});
+                      }
+                    }}
+                    className="flex items-center gap-3 hover:bg-muted/50 p-1.5 rounded-lg transition-colors w-full text-left"
+                  >
+                    <span className="grid h-8 w-8 place-items-center rounded-md bg-muted text-lg shrink-0">
+                      {p.icon}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[13px] font-semibold text-foreground hover:text-primary transition-colors">
+                        {p.name}
+                      </p>
+                      <TypoCaption as="p">
+                        {p.stack.join(" · ")}
+                      </TypoCaption>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Card>
+
+          {(() => {
+            const githubUrl = b.githubUrl;
+            let githubUsername = undefined;
+            if (githubUrl) {
+              try {
+                const url = new URL(githubUrl);
+                githubUsername = url.pathname.split('/').filter(Boolean).pop();
+              } catch (e) {
+                // Ignore invalid URLs
+              }
+            }
+            
+            if (githubUsername) {
+              return <div className="mt-4"><GitHubInsights username={githubUsername} /></div>;
+            }
+            return <ContributionHeatmap username={b.handle} className="mt-4" />;
+          })()}
+          <ActivityTimeline userId={b.id} />
+        </div>
       </div>
       {!me && (
         <ReportUserModal

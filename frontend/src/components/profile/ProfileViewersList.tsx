@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, Shield, User, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TypoSection, TypoCaption } from "@/components/shared/Typography";
 
 export interface ViewerItem {
   id: string;
@@ -76,13 +77,13 @@ export function ProfileViewersList({
       {/* Header & Privacy Opt-Out Control */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
         <div>
-          <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+          <TypoSection>
             <Eye className="h-4 w-4 text-primary" />
             Recent Profile Visitors
-          </h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          </TypoSection>
+          <TypoCaption as="p">
             {totalViewers} developers viewed your profile recently.
-          </p>
+          </TypoCaption>
         </div>
 
         {/* Privacy Toggle */}
@@ -90,7 +91,7 @@ export function ProfileViewersList({
           <Shield className="h-4 w-4 text-muted-foreground shrink-0" />
           <div className="text-xs">
             <p className="font-medium text-foreground">Private Browsing</p>
-            <p className="text-[11px] text-muted-foreground">Hide my visits to other profiles</p>
+            <TypoCaption as="p">Hide my visits to other profiles</TypoCaption>
           </div>
           <button
             type="button"
@@ -118,13 +119,13 @@ export function ProfileViewersList({
           <li key={viewer.id} className="py-3 flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
               {viewer.is_anonymous || !viewer.viewer_avatar ? (
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground font-semibold text-xs border border-border shrink-0">
+                <TypoCaption>
                   {viewer.is_anonymous ? (
                     <EyeOff className="h-4 w-4" />
                   ) : (
                     <User className="h-4 w-4" />
                   )}
-                </span>
+                </TypoCaption>
               ) : (
                 <img
                   src={viewer.viewer_avatar}
@@ -137,16 +138,16 @@ export function ProfileViewersList({
                 <p className="text-sm font-medium text-foreground truncate flex items-center gap-1.5">
                   {viewer.viewer_name}
                   {viewer.is_anonymous && (
-                    <span className="inline-flex items-center rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                    <TypoCaption>
                       Private
-                    </span>
+                    </TypoCaption>
                   )}
                 </p>
-                <p className="text-xs text-muted-foreground truncate">
+                <TypoCaption as="p">
                   {viewer.is_anonymous
                     ? "Visitor opted out of public identity"
                     : `@${viewer.viewer_username}`}
-                </p>
+                </TypoCaption>
               </div>
             </div>
 
@@ -164,9 +165,9 @@ export function ProfileViewersList({
       {/* Pagination Controls */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-2 border-t border-border/60 text-xs">
-          <span className="text-muted-foreground">
+          <TypoCaption>
             Page {currentPage} of {totalPages}
-          </span>
+          </TypoCaption>
 
           <div className="flex items-center gap-1">
             <button
